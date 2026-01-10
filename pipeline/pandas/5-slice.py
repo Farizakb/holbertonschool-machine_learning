@@ -3,6 +3,7 @@
 Module to slice specific data from a pandas DataFrame
 """
 
+
 def slice(df):
     """
     Takes a pd.DataFrame and returns the row
