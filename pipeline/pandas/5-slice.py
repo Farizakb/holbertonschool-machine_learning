@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 """
-Module to slice specific data from a pandas DataFrame
+Module to slice a pandas DataFrame
 """
 
 def slice(df):
     """
-    Takes a pd.DataFrame and returns the row
-    with index label 60 and the columns High, Low, Close, and Volume_BTC
+    Slices a pd.DataFrame to specific columns and every 60th row
+
     Args:
-        df: pd.DataFrame containing the relevant columns
+        df: the pd.DataFrame to slice
+
     Returns:
-        pd.DataFrame sliced to the specified row and columns
+        The sliced pd.DataFrame
     """
-   
-    return df[['High', 'Low', 'Close', 'Volume_BTC']].iloc[::60]
+    # Select the required columns first
+    # Then use positional slicing [::60] to get every 60th row
+    df_sliced = df[['High', 'Low', 'Close', 'Volume_BTC']].iloc[::60]
+
+    return df_sliced
