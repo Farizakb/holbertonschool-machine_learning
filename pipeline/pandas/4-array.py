@@ -2,7 +2,6 @@
 """
 Module to convert specific parts of a DataFrame to a numpy array
 """
-import pandas as pd
 
 
 def array(df):
