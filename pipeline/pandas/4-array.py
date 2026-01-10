@@ -16,5 +16,9 @@ def array(df):
     Returns:
         numpy.ndarray containing the selected values
     """
+    # Select the High and Close columns, then take the last 10 rows
+    # .tail(10) is a convenient way to get the last N rows
     selected_data = df[['High', 'Close']].tail(10)
+
+    # Convert the resulting selection into a numpy array
     return selected_data.to_numpy()
