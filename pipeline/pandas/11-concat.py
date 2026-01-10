@@ -6,9 +6,16 @@ import pandas as pd
 index = __import__('10-index').index
 
 
-def contact(df1, df2):
+def concat(df1, df2):
+    """
+    Task 11
+    """
     df1 = index(df1)
     df2 = index(df2)
 
-    df = pd.concat([df2.loc[:1417411920], df1], keys=['bitstamp', 'coinbase'])
-    return df
+    df2_filtered = df2.loc[:1417411920]
+
+    # Concatenate df2_filtered on top of df1
+    # keys adds the top-level index labels
+    df_combined = pd.concat([df2_filtered, df1], keys=['bitstamp', 'coinbase'])
+    return ddf_combinedff
