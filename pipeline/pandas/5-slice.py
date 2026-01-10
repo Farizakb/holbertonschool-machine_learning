@@ -12,5 +12,5 @@ def slice(df):
     Returns:
         pd.DataFrame sliced to the specified row and columns
     """
-    df = df.loc[60, ['High', 'Low', 'Close', 'Volume_(BTC)']]
+    df = df.loc[::60, ['High', 'Low', 'Close', 'Volume_(BTC)']]
     return df
