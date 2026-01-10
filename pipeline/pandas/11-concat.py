@@ -18,4 +18,4 @@ def concat(df1, df2):
     # Concatenate df2_filtered on top of df1
     # keys adds the top-level index labels
     df_combined = pd.concat([df2_filtered, df1], keys=['bitstamp', 'coinbase'])
-    return ddf_combinedff
+    return df_combined
