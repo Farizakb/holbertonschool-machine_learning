@@ -15,3 +15,4 @@ def line():
     plt.plot(y, color='red')
     plt.xlim(0, 10)
     plt.show()
+    

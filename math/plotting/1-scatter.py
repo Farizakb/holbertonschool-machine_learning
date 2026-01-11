@@ -24,3 +24,4 @@ def scatter():
     plt.scatter(x, y, c='magenta')
     # plt.scatter(x, y, c='m')
     plt.show()
+    
