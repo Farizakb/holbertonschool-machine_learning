@@ -9,7 +9,8 @@ def poly_derivative(poly):
                      where the index represents the power of x.
 
     Returns:
-        list: A list of coefficients representing the derivative of the polynomial.
+        list: A list of coefficients representing the derivative of
+        the polynomial.
     """
     if not isinstance(poly, list) or len(poly) == 0:
         return None
