@@ -3,12 +3,20 @@
 
 
 def poly_integral(poly, C=0):
+    """Calculates the integral of a polynomial.
+    Args:
+        poly (list): A list of coefficients representing the polynomial,
+                     where the index represents the power of x.
+        C (int): The constant of integration (default is 0).
+    Returns:
+        list: A list of coefficients representing the integral of the polynomial.
+    """
     # Check if poly is a valid non-empty list
     if not isinstance(poly, list) or len(poly) == 0:
         return None
     # Check if C is an integer
     if not isinstance(C, int):
-        return None  
+        return None
     # Check if all elements in poly are numbers
     if not all(isinstance(x, (int, float)) for x in poly):
         return None
@@ -20,10 +28,10 @@ def poly_integral(poly, C=0):
         new_coeff = poly[i] / (i + 1)
         # Convert to integer if it's a whole number (e.g., 4.0 -> 4)
         if new_coeff == int(new_coeff):
-            new_coeff = int(new_coeff) 
+            new_coeff = int(new_coeff)
         integral.append(new_coeff)
 
-    # Remove trailing zeros to keep the list as small as possible, 
+    # Remove trailing zeros to keep the list as small as possible,
     while len(integral) > 1 and integral[-1] == 0:
-        integral.pop()   
+        integral.pop()
     return integral
