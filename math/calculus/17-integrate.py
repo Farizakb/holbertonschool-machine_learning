@@ -9,7 +9,8 @@ def poly_integral(poly, C=0):
                      where the index represents the power of x.
         C (int): The constant of integration (default is 0).
     Returns:
-        list: A list of coefficients representing the integral of the polynomial.
+        list: A list of coefficients representing 
+        the integral of the polynomial.
     """
     # Check if poly is a valid non-empty list
     if not isinstance(poly, list) or len(poly) == 0:
