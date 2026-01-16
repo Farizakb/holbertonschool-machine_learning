@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Module for calculating the derivative of a polynomial."""
 
+
 def poly_derivative(poly):
     """Calculates the derivative of a polynomial.
 
