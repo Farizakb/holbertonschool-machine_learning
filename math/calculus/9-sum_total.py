@@ -2,7 +2,6 @@
 """Module for calculating the summation of i squared from 1 to n."""
 
 
-
 def summation_i_squared(n):
     """Calculates the summation of i squared from 1 to n.
 
