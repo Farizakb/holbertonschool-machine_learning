@@ -1,4 +1,5 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
+
 """Module for calculating the summation of i squared from 1 to n."""
 
 
