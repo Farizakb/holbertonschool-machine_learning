@@ -3,7 +3,6 @@
 Module to calculate the cofactor matrix of a matrix
 """
 minor = __import__('1-minor').minor
-determinant = __import__('0-determinant').determinant
 
 
 def cofactor(matrix):
@@ -20,20 +19,24 @@ def cofactor(matrix):
         raise TypeError("matrix must be a list of lists")
     if not all(isinstance(row, list) for row in matrix):
         raise TypeError("matrix must be a list of lists")
-    if len(matrix) == 1 and len(matrix[0]) == 0:
+
+    n = len(matrix)
+    if n == 1 and len(matrix[0]) == 0:
         raise ValueError("matrix must be a non-empty square matrix")
+
     for row in matrix:
-        if len(row) != len(matrix):
+        if len(row) != n:
             raise ValueError("matrix must be a non-empty square matrix")
-    if len(matrix) == 1:
+
+    if n == 1:
         return [[1]]
+
     minor_matrix = minor(matrix)
     cofactor_matrix = []
-    for i in range(len(minor_matrix)):
-        rows = [row for k, row in enumerate(minor_matrix) if k != i]
+    for i in range(n):
         cofactor_row = []
-        for j in range(len(minor_matrix)):
-            sub_matrix = [row[:j] + row[j+1:] for row in rows]
-            cofactor_row.append(((-1) ** (i + j)) * determinant(sub_matrix))
+        for j in range(n):
+            cofactor_row.append(((-1) ** (i + j)) * minor_matrix[i][j])
         cofactor_matrix.append(cofactor_row)
+
     return cofactor_matrix
