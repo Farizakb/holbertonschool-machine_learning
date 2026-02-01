@@ -51,4 +51,3 @@ def determinant(matrix):
         det += ((-1) ** j) * matrix[0][j] * determinant(get_minor(matrix, j))
 
     return det
-
