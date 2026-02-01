@@ -20,7 +20,10 @@ def definiteness(matrix):
         raise TypeError("matrix must be a numpy.ndarray")
 
     # Check if the matrix is square and symmetric
-    if len(matrix.shape) != 2 or matrix.shape[0] != matrix.shape[1] or matrix.size == 0:
+    if (len(matrix.shape) != 2 or
+            matrix.shape[0] != matrix.shape[1] or
+            matrix.size == 0):
+
         return None
     if not np.allclose(matrix, matrix.T):
         return None
@@ -44,7 +47,7 @@ def definiteness(matrix):
             return "Positive semi-definite"
         if neg_count > 0 and zero_count > 0:
             return "Negative semi-definite"
-        
+
         return None
     except Exception:
         return None
