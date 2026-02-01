@@ -3,6 +3,7 @@
 Module to calculate the cofactor matrix of a matrix
 """
 minor = __import__('1-minor').minor
+determinant = __import__('0-determinant').determinant
 
 
 def cofactor(matrix):
