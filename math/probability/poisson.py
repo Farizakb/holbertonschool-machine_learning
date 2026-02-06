@@ -21,7 +21,7 @@ class Poisson:
             if not isinstance(data, list):
                 raise TypeError("data must be a list")
             if len(data) < 2:
-                raise ValueError("data must contain at least 2 data points")
+                raise ValueError("data must contain multiple values")
             # Calculate the mean of the data to set lambtha
             self.lambtha = float(sum(data) / len(data))
 
@@ -43,14 +43,14 @@ class Poisson:
         k = int(k)
         if k < 0:
             return 0
-        
+
         # Using the constant e provided in your requirements
         e = 2.7182818285
-        
+
         # Formula: (e^-lambda * lambda^k) / k!
         numerator = (e ** -self.lambtha) * (self.lambtha ** k)
         denominator = self.factorial(k)
-        
+
         return numerator / denominator
 
     def cdf(self, k):
@@ -60,7 +60,7 @@ class Poisson:
         k = int(k)
         if k < 0:
             return 0
-        
+
         # CDF is the sum of PMFs from 0 to k
         result = 0
         for i in range(k + 1):
