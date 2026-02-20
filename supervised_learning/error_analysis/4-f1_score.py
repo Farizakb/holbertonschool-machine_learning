@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
 """
-    F1 Score
+    F1 score
 """
-
 import numpy as np
+sensitivity = __import__('1-sensitivity').sensitivity
+precision = __import__('2-precision').precision
 
 
 def f1_score(confusion):
     """
-        calculates the f1 score for each class in a confusion matrix
+        function that calculates F1 score of a confusion matrix
 
-        :param confusion: ndarray, shape(classes,classes), matrix confusion
+        :param confusion: ndarray, shape(classes, classes)
 
-        :return: ndarray, shape(classes,) containing f1 score of each class
+        :return: ndarray, shape(classes,) F1 score of each class
     """
     # number of classes
     classes = confusion.shape[0]
-    # initialize f1 score
-    f1_score_matrix = np.zeros((classes,))
+    # initialize f1 score matrix
+    f_one = np.zeros((classes,))
+
+    calc_precision = precision(confusion)
+    calc_sensitivity = sensitivity(confusion)
 
     for i in range(classes):
-        true_positive = confusion[i, i]
-        # sum along the column
-        total_positives = np.sum(confusion[:, i])
-        false_negatives = np.sum(confusion[i, :]) - true_positive
-        total_negatives = np.sum(confusion) - total_positives - false_negatives
-        f1_score_matrix[i] = 2 * (true_positive / (true_positive + false_negatives)) * (true_positive / (true_positive + false_positives)) / (true_positive / (true_positive + false_negatives) + true_positive / (true_positive + false_positives))
+        f_one[i] = (2 * (calc_precision[i] * calc_sensitivity[i]) /
+                    (calc_precision[i] + calc_sensitivity[i]))
 
-    return f1_score_matrix
+    return f_one
