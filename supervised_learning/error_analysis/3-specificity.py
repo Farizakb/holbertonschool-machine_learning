@@ -18,12 +18,20 @@ def specificity(confusion):
     classes = confusion.shape[0]
     # initialize specificity
     specificity_matrix = np.zeros((classes,))
+    # total sum of all elements in confusion matrix
+    total = np.sum(confusion)
 
     for i in range(classes):
-        true_positive = confusion[i, i]
-        # sum along the column
-        total_positives = np.sum(confusion[:, i])
+        # elements correctly predicted as i
+        tp = confusion[i, i]
+        # elements incorrectly predicted as i (actual is not i)
+        fp = np.sum(confusion[:, i]) - tp
+        # elements incorrectly predicted as not i (actual is i)
+        fn = np.sum(confusion[i, :]) - tp
+        # elements correctly predicted as not i (actual is not i)
+        tn = total - (tp + fp + fn)
 
-        specificity_matrix[i] = true_positive / total_positives
+        # specificity = TN / (TN + FP)
+        specificity_matrix[i] = tn / (tn + fp)
 
     return specificity_matrix
