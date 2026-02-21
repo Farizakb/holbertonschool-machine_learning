@@ -36,7 +36,7 @@ class Isolation_Random_Forest():
         predictions = np.array([f(explanatory) for f in self.numpy_preds])
         return predictions.mean(axis=0)
 
-    def fit(self, explanatory, n_trees=100, verbose=0):
+    def fit(self, explanatory, n_trees=None, verbose=0):
         """
         Trains the isolation forest on the data.
 
@@ -45,6 +45,8 @@ class Isolation_Random_Forest():
             n_trees (int): Number of trees to train
             verbose (int): Verbosity level
         """
+        if n_trees is None:
+            n_trees = self.n_trees
         self.explanatory = explanatory
         self.numpy_preds = []
         depths = []
@@ -52,7 +54,7 @@ class Isolation_Random_Forest():
         leaves = []
         for i in range(n_trees):
             T = Isolation_Random_Tree(max_depth=self.max_depth,
-                                      seed=self.seed+i)
+                                      seed=self.seed + i)
             T.fit(explanatory)
             self.numpy_preds.append(T.predict)
             depths.append(T.depth())
@@ -62,10 +64,10 @@ class Isolation_Random_Forest():
             mean_depth = np.array(depths).mean()
             mean_nodes = np.array(nodes).mean()
             mean_leaves = np.array(leaves).mean()
-            print(f"""  Training finished.
-    - Mean depth                     : {mean_depth}
-    - Mean number of nodes           : {mean_nodes}
-    - Mean number of leaves          : {mean_leaves}""")
+            print("Training finished.")
+            print(f"Mean depth : {mean_depth}")
+            print(f"Mean number of nodes : {mean_nodes}")
+            print(f"Mean number of leaves : {mean_leaves}")
 
     def suspects(self, explanatory, n_suspects):
         """
