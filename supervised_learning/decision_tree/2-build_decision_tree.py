@@ -88,7 +88,6 @@ class Leaf(Node):
         return "leaf [value={}]".format(self.value)
 
 
-
 class Decision_Tree():
     """Class representing a decision tree"""
 
