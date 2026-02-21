@@ -13,7 +13,7 @@ class Node:
         self.sub_population = None
         self.depth = depth
 
-    def max_depth_below(self) :
+    def max_depth_below(self):
         if self.is_leaf:
             return self.depth
         else:
@@ -26,7 +26,7 @@ class Leaf(Node):
         self.is_leaf = True
         self.depth = depth
 
-    def max_depth_below(self) :
+    def max_depth_below(self):
         return self.depth
 
 class Decision_Tree():
@@ -43,5 +43,5 @@ class Decision_Tree():
         self.split_criterion = split_criterion
         self.predict = None
 
-    def depth(self) :
+    def depth(self):
         return self.root.max_depth_below()
