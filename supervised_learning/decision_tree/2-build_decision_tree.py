@@ -32,23 +32,20 @@ class Node:
                 (0 if only_leaves else 1))
 
     def left_child_add_prefix(self, text):
-        """Adds prefix to left child's string representation"""
+        """Add prefix for left child."""
         lines = text.split("\n")
-        new_text = "+---> " + lines[0] + "\n"
+        new_text = "    +---> " + lines[0] + "\n"
         for x in lines[1:]:
-            if len(x) > 0:
-                new_text += ("| " + x) + "\n"
+            new_text += ("    |  " + x) + "\n"
         return new_text
 
     def right_child_add_prefix(self, text):
-        """Adds prefix to right child's string representation"""
+        """Add prefix for right child.."""
         lines = text.split("\n")
-        new_text = "+---> " + lines[0] + "\n"
+        new_text = "    +---> " + lines[0] + "\n"
         for x in lines[1:]:
-            if len(x) > 0:
-                new_text += ("  " + x) + "\n"
+            new_text += ("       " + x) + "\n"
         return new_text
-
 
     def __str__(self):
         """Returns the string representation of the node"""
