@@ -31,26 +31,40 @@ class Node:
                 self.right_child.count_nodes_below(only_leaves=only_leaves) +
                 (0 if only_leaves else 1))
 
-    def left_child_add_prefix(self,text):
-        lines=text.split("\n")
-        new_text="    +--"+lines[0]+"\n"
-        for x in lines[1:] :
-            new_text+=("    |  "+x)+"\n"
-        return (new_text)
+    def left_child_add_prefix(self, text):
+        """Adds prefix to left child's string representation"""
+        lines = text.split("\n")
+        new_text = "    +---> " + lines[0] + "\n"
+        for x in lines[1:]:
+            if len(x) > 0:
+                new_text += ("    |      " + x) + "\n"
+        return new_text
 
-    def right_child_add_prefix(self,text):
-        lines=text.split("\n")
-        new_text="    +--"+lines[0]+"\n"
-        for x in lines[1:] :
-            new_text+=("       "+x)+"\n"
-        return (new_text)
+    def right_child_add_prefix(self, text):
+        """Adds prefix to right child's string representation"""
+        lines = text.split("\n")
+        new_text = "    +---> " + lines[0] + "\n"
+        for x in lines[1:]:
+            if len(x) > 0:
+                new_text += ("           " + x) + "\n"
+        return new_text
 
     def __str__(self):
-        text=self.left_child.__str__()
-        text=self.left_child_add_prefix(text)
-        text+=self.right_child.__str__()
-        text=self.right_child_add_prefix(text)
-        return (f"-> node [feature={self.feature}, threshold={self.threshold}]\n"+text)
+        """Returns the string representation of the node"""
+        if self.is_root:
+            out = "root [feature={}, threshold={}]\n".format(self.feature,
+                                                             self.threshold)
+        else:
+            out = "node [feature={}, threshold={}]\n".format(self.feature,
+                                                             self.threshold)
+
+        if self.left_child:
+            left_str = self.left_child.__str__()
+            out += self.left_child_add_prefix(left_str)
+        if self.right_child:
+            right_str = self.right_child.__str__()
+            out += self.right_child_add_prefix(right_str)
+        return out
 
 
 class Leaf(Node):
@@ -72,7 +86,8 @@ class Leaf(Node):
         return 1
 
     def __str__(self):
-        return (f"-> leaf [value={self.value}]")
+        """Returns the string representation of the leaf"""
+        return "leaf [value={}]".format(self.value)
 
 
 
@@ -103,4 +118,5 @@ class Decision_Tree():
         return self.root.count_nodes_below(only_leaves=only_leaves)
 
     def __str__(self):
+        """Returns the string representation of the decision tree"""
         return self.root.__str__()
