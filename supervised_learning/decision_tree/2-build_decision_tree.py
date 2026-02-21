@@ -34,20 +34,21 @@ class Node:
     def left_child_add_prefix(self, text):
         """Adds prefix to left child's string representation"""
         lines = text.split("\n")
-        new_text = "    +---> " + lines[0] + "\n"
+        new_text = "+---> " + lines[0] + "\n"
         for x in lines[1:]:
             if len(x) > 0:
-                new_text += ("    |      " + x) + "\n"
+                new_text += ("| " + x) + "\n"
         return new_text
 
     def right_child_add_prefix(self, text):
         """Adds prefix to right child's string representation"""
         lines = text.split("\n")
-        new_text = "    +---> " + lines[0] + "\n"
+        new_text = "+---> " + lines[0] + "\n"
         for x in lines[1:]:
             if len(x) > 0:
-                new_text += ("           " + x) + "\n"
+                new_text += ("  " + x) + "\n"
         return new_text
+
 
     def __str__(self):
         """Returns the string representation of the node"""
@@ -59,11 +60,9 @@ class Node:
                                                              self.threshold)
 
         if self.left_child:
-            left_str = self.left_child.__str__()
-            out += self.left_child_add_prefix(left_str)
+            out += self.left_child_add_prefix(self.left_child.__str__())
         if self.right_child:
-            right_str = self.right_child.__str__()
-            out += self.right_child_add_prefix(right_str)
+            out += self.right_child_add_prefix(self.right_child.__str__())
         return out
 
 
