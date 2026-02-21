@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Implémentation d'un arbre de décision simple."""
+"""Implementation of an isolation random tree."""
 
 import numpy as np
 Node = __import__('8-build_decision_tree').Node
@@ -8,24 +8,21 @@ Leaf = __import__('8-build_decision_tree').Leaf
 
 class Isolation_Random_Tree():
     """
-    Arbre d'isolation aléatoire pour la détection d'anomalies.
+    Random isolation tree for anomaly detection.
 
-    Cette classe implémente un arbre de décision utilisé dans les algorithmes
-    d'isolation pour détecter les anomalies dans les données. L'arbre effectue
-    des divisions aléatoires sur les caractéristiques pour isoler les points
-    de données anormaux.
+    This class implements a decision tree used in isolation algorithms
+    to detect anomalies in data. The tree performs random splits on
+    features to isolate anomalous data points.
     """
 
     def __init__(self, max_depth=10, seed=0, root=None):
         """
-        Initialise un arbre d'isolation aléatoire.
+        Initializes a random isolation tree.
 
         Args:
-            max_depth (int): Profondeur maximale de l'arbre (défaut: 10)
-            seed (int): Graine pour la génération de
-                nombres aléatoires (défaut: 0)
-            root (Node): Nœud racine existant
-                (défaut: None, crée un nouveau nœud)
+            max_depth (int): Maximum depth of the tree (default: 10)
+            seed (int): Seed for random number generation (default: 0)
+            root (Node): Existing root node (default: None, creates a new node)
         """
         self.rng = np.random.default_rng(seed)
         if root:
@@ -39,38 +36,37 @@ class Isolation_Random_Tree():
 
     def __str__(self):
         """
-        Retourne une représentation textuelle de l'arbre.
+        Returns a textual representation of the tree.
 
         Returns:
-            str: Représentation en chaîne de caractères de l'arbre
+            str: String representation of the tree
         """
         return self.root.__str__()
 
     def depth(self):
         """
-        Calculate the maximum depth of the tree.
+        Calculates the maximum depth of the tree.
 
         Returns:
-            int: La profondeur maximale de l'arbre
+            int: The maximum depth of the tree
         """
         return self.root.max_depth_below()
 
     def count_nodes(self, only_leaves=False):
         """
-        Compte le nombre de nœuds dans l'arbre.
+        Counts the number of nodes in the tree.
 
         Args:
-            only_leaves (bool): Si True,
-                compte seulement les feuilles (défaut: False)
+            only_leaves (bool): If True, counts only leaves (default: False)
 
         Returns:
-            int: Le nombre de nœuds (ou de feuilles si only_leaves=True)
+            int: The number of nodes (or leaves if only_leaves=True)
         """
         return self.root.count_nodes_below(only_leaves=only_leaves)
 
     def update_bounds(self):
         """
-        Update the bounds of all nodes in the tree.
+        Updates the bounds of all nodes in the tree.
 
         Necessary for the proper functioning of predictions.
         """
@@ -78,20 +74,19 @@ class Isolation_Random_Tree():
 
     def get_leaves(self):
         """
-        Récupère toutes les feuilles de l'arbre.
+        Retrieves all the leaves of the tree.
 
         Returns:
-            list: Liste de tous les nœuds feuilles de l'arbre
+            list: List of all leaf nodes in the tree
         """
         return self.root.get_leaves_below()
 
     def update_predict(self):
         """
-        Update the prediction function of the tree.
+        Updates the prediction function of the tree.
 
-        Configure les indicateurs des feuilles et crée une fonction lambda
-        qui calcule les prédictions en sommant les
-            contributions de chaque feuille.
+        Configures leaf indicators and creates a lambda function
+        that calculates predictions by summing the contributions of each leaf.
         """
         self.update_bounds()
         leaves = self.get_leaves()
@@ -103,28 +98,27 @@ class Isolation_Random_Tree():
 
     def np_extrema(self, arr):
         """
-        Calculate the minimum and maximum values of an array.
+        Calculates the minimum and maximum values of an array.
 
         Args:
-            arr (numpy.array): Tableau dont on veut les extrema
+            arr (numpy.array): Array for which to find the extrema
 
         Returns:
-            tuple: (valeur_minimale, valeur_maximale)
+            tuple: (minimum_value, maximum_value)
         """
         return np.min(arr), np.max(arr)
 
     def random_split_criterion(self, node):
         """
-        Generate a random split criterion for a node.
+        Generates a random split criterion for a node.
 
-        Choisit aléatoirement une caractéristique et un seuil de division.
+        Randomly chooses a feature and a split threshold.
 
         Args:
-            node (Node): Le nœud pour lequel générer le critère de division
+            node (Node): The node for which to generate the split criterion
 
         Returns:
-            tuple: (feature, threshold) -
-                l'indice de la caractéristique et le seuil
+            tuple: (feature, threshold) - the feature index and the threshold
         """
         diff = 0
         while diff == 0:
@@ -138,14 +132,14 @@ class Isolation_Random_Tree():
 
     def get_leaf_child(self, node, sub_population):
         """
-        Crée un nœud feuille enfant avec la sous-population donnée.
+        Creates a child leaf node with the given sub-population.
 
         Args:
-            node (Node): Le nœud parent
-            sub_population (numpy.array): Masque booléen de la sous-population
+            node (Node): The parent node
+            sub_population (numpy.array): Boolean mask of the sub-population
 
         Returns:
-            Leaf: Le nœud feuille créé
+            Leaf: The created leaf node
         """
         leaf_child = Leaf(node.depth + 1)
         leaf_child.depth = node.depth + 1
@@ -154,14 +148,14 @@ class Isolation_Random_Tree():
 
     def get_node_child(self, node, sub_population):
         """
-        Crée un nœud enfant (non-feuille) avec la sous-population donnée.
+        Creates a child node (non-leaf) with the given sub-population.
 
         Args:
-            node (Node): Le nœud parent
-            sub_population (numpy.array): Masque booléen de la sous-population
+            node (Node): The parent node
+            sub_population (numpy.array): Boolean mask of the sub-population
 
         Returns:
-            Node: Le nœud enfant créé
+            Node: The created child node
         """
         n = Node()
         n.depth = node.depth + 1
@@ -170,14 +164,13 @@ class Isolation_Random_Tree():
 
     def fit_node(self, node):
         """
-        Recursively fit a node by creating its children.
+        Recursively fits a node by creating its children.
 
-        Détermine s'il faut créer des feuilles ou continuer
-            la division selon la profondeur
-        et la taille de la population.
+        Determines whether to create leaves or continue splitting
+        based on depth and population size.
 
         Args:
-            node (Node): Le nœud à ajuster
+            node (Node): The node to fit
         """
         node.feature, node.threshold = self.random_split_criterion(node)
 
@@ -208,19 +201,17 @@ class Isolation_Random_Tree():
 
     def fit(self, explanatory, verbose=0):
         """
-        Train the isolation tree on the provided explanatory data.
+        Trains the isolation tree on the provided explanatory data.
 
-        Construit l'arbre complet et prépare la fonction de prédiction.
+        Builds the full tree and prepares the prediction function.
 
         Args:
-            explanatory (numpy.array): Données d'entraînement (
-                caractéristiques)
-            verbose (int): Niveau de verbosité (
-                0=silencieux, 1=affiche les statistiques)
+            explanatory (numpy.array): Training data (features)
+            verbose (int): Verbosity level (0=silent, 1=display stats)
         """
         self.split_criterion = self.random_split_criterion
         self.explanatory = explanatory
-        self.root.sub_population = np.ones_like(
+        self.root.sub_population = np.ones(
             explanatory.shape[0], dtype='bool')
 
         self.fit_node(self.root)

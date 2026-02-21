@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Implémentation d'un arbre de décision simple."""
+"""Implementation of a simple decision tree."""
 
 import numpy as np
 
 
 class Node:
-    """Classe représentant un nœud interne d'un arbre de décision."""
+    """Represents an internal node of a decision tree."""
 
     def __init__(self, feature=None, threshold=None, left_child=None,
                  right_child=None, is_root=False, depth=0):
-        """Initialise un nœud interne de l'arbre de décision."""
-        self.feature = feature              # Index de la feature pour split
+        """Initializes an internal node of the decision tree."""
+        self.feature = feature              # Index of the feature for splitting
         self.threshold = threshold          # Seuil de split pour la feature
         self.left_child = left_child        # Sous-arbre gauche (Node ou Leaf)
         self.right_child = right_child      # Sous-arbre droit (Node ou Leaf)
@@ -20,13 +20,7 @@ class Node:
         self.depth = depth                  # Profondeur du nœud dans l'arbre
 
     def max_depth_below(self):
-        """Retourne la profondeur maximale.
-
-        Méthode récursive qui compte la profondeur max d'un arbre
-        à partir d'un nœud donné
-
-        Returns:
-            int: La plus grande valeur des résultats de la récursion
+        """Returns the maximum depth.
         """
         # Liste vide pour récupérer la profondeur max de chaque branche
         result = []
@@ -43,16 +37,6 @@ class Node:
         return max(result)  # Renvoie le plus grand résultat de la liste
 
     def count_nodes_below(self, only_leaves=False):
-        """Compte les nodes enfant d'un node donné.
-
-        Args:
-            only_leaves (bool, optional):
-            indique si le retour dois être le nombre de node ou de feuille.
-            Defaults to False.
-
-        Returns:
-            int: nombre de node enfant ou de feuilles
-        """
         count = 0
 
         # Parcourt les branches gauche récursivement
@@ -80,7 +64,6 @@ class Node:
         return 1 + count
 
     def __str__(self):
-        """Affiche le nœud et ses enfants sous forme de chaîne."""
         s = f"-> node [feature={self.feature}, threshold={self.threshold}]"
         if self.is_root is True:
             s = f"root [feature={self.feature}, threshold={self.threshold}]"
@@ -94,7 +77,6 @@ class Node:
         return s
 
     def left_child_add_prefix(self, text):
-        """Ajoute un préfixe pour afficher le sous-arbre gauche."""
         lines = text.split("\n")
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:-1]:
@@ -102,7 +84,6 @@ class Node:
         return (new_text)
 
     def right_child_add_prefix(self, text):
-        """Ajoute un préfixe pour afficher le sous-arbre droit."""
         lines = text.split("\n")
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:-1]:
@@ -110,12 +91,6 @@ class Node:
         return (new_text)
 
     def get_leaves_below(self):
-        """
-        Retourne la liste de toutes les feuilles sous ce nœud (récursif).
-
-        Returns:
-            list: Liste des objets feuilles descendants.
-        """
         result = []
         if self.left_child is not None:
             result.extend(self.left_child.get_leaves_below())
@@ -128,12 +103,6 @@ class Node:
         return result
 
     def update_bounds_below(self):
-        """
-        Met à jour récursivement les bornes (upper/lower) pour chaque nœud.
-
-        Initialise les bornes à la racine, puis propage les contraintes
-        de split à chaque enfant selon la branche (gauche/droite).
-        """
         if self.is_root:
             self.upper = {0: np.inf}  # {0: +∞}
             self.lower = {0: -1 * np.inf}  # {0: -∞}
@@ -161,25 +130,8 @@ class Node:
                 child.update_bounds_below()  # Récursion
 
     def update_indicator(self):
-        """MAJ l'attribut `indicator` avec une fonction.
-
-        qui vérifie si chaque échantillon respecte les bornes définies.
-        """
         def is_large_enough(x):
-            """Check if all features in the input array `x`.
-
-            are greater than their corresponding lower bounds.
-
-            Args:
-                x (np.ndarray): A 2D numpy array of shape
-                (n_samples, n_features), where each row represents
-                a sample and each column corresponds to a feature.
-
-            Returns:
-                np.ndarray: A boolean array of shape (n_samples,)
-                indicating for each sample whether all its features are greater
-                than the specified lower bounds in `self.lower`.
-            """
+           
             return np.all(np.array([
                 np.greater(
                     x[:, key], self.lower[key])  # x[:, key] > self.upper[key]
@@ -187,21 +139,7 @@ class Node:
                           axis=0)  # axe des colonnes
 
         def is_small_enough(x):
-            """Check if all features in the input array `x`.
-
-            are less or equal than their corresponding upper bounds.
-
-            Args:
-                x (np.ndarray): A 2D numpy array of shape
-                (n_samples, n_features), where each row represents
-                a sample and each column corresponds to a feature.
-
-            Returns:
-                np.ndarray: A boolean array of shape (n_samples,)
-                indicating for each sample whether all its features
-                are less or equal than the specified upper
-                bounds in `self.upper`.
-            """
+           
             return np.all(np.array([
                 np.less_equal(
                     x[:, key], self.upper[key])  # x[:, key] <= self.upper[key]
@@ -213,19 +151,6 @@ class Node:
                       is_small_enough(x)]), axis=0)
 
     def pred(self, x):
-        """Méthode qui suit les décisions prises au niveau de ce nœud.
-
-        Si la valeur de la caractéristique de x est supérieure
-        au seuil (threshold), elle se dirige vers l'enfant gauche,
-        sinon vers l'enfant droit, et demande à cet enfant de continuer
-        la prédiction.
-
-        Args:
-            x (array-like): Un échantillon à prédire.
-
-        Returns:
-            La prédiction retournée par la feuille atteinte.
-        """
         if x[self.feature] > self.threshold:
             return self.left_child.pred(x)
         else:
@@ -233,70 +158,36 @@ class Node:
 
 
 class Leaf(Node):
-    """Classe représentant une feuille de l'arbre de décision."""
 
     def __init__(self, value, depth=None):
-        """Initialise une feuille de l'arbre de décision."""
         super().__init__()
         self.value = value
         self.is_leaf = True
         self.depth = depth
 
     def max_depth_below(self):
-        """
-        Retourne la profondeur de la feuille.
-
-        Returns:
-            int: Profondeur de la feuille.
-        """
         return self.depth
 
     def count_nodes_below(self, only_leaves=False):
-        """Compte le nombre de nœuds ou de feuilles."""
         return 1
 
     def get_leaves_below(self):
-        """
-        Retourne une liste contenant cette feuille.
-
-        Returns:
-            list: Liste contenant uniquement cette feuille.
-        """
+       
         return [self]
 
     def __str__(self):
-        """
-        Retourne une représentation lisible de la feuille pour l'affichage.
-
-        Returns:
-            str: Description de la feuille avec sa valeur.
-        """
+       
         return f"-> leaf [value={self.value}]"
 
     def update_bounds_below(self):
-        """
-        Méthode présente pour compatibilité avec Node.
-
-        Ne fait rien pour une feuille.
-        """
         pass
 
     def pred(self, x):
-        """Quand un échantillon arrive à une feuille, la prédiction est simple.
-
-        Elle retourne sa propre value
-
-        Args:
-            x (Any): The input sample for which the prediction is to be made.
-
-        Returns:
-            Any: The predicted value stored in the leaf node.
-        """
+      
         return self.value
 
 
 class Decision_Tree():
-    """Classe principale pour l'arbre de décision."""
 
     def __init__(self, max_depth=10, min_pop=1, seed=0,
                  split_criterion="random", root=None):
@@ -314,50 +205,27 @@ class Decision_Tree():
         self.predict = None
 
     def depth(self):
-        """
-        Retourne la profondeur maximale de l'arbre.
-
-        Returns:
-            int: Profondeur maximale de l'arbre.
-        """
         return self.root.max_depth_below()
 
     def count_nodes(self, only_leaves=False):
-        """Compte les nœuds ou feuilles de l'arbre."""
         return self.root.count_nodes_below(only_leaves=only_leaves)
 
     def __str__(self):
-        """
-        Retourne une représentation lisible de l'arbre (racine).
-
-        Returns:
-            str: Affichage de la racine de l'arbre.
-        """
+        
         return self.root.__str__()
 
     def get_leaves(self):
-        """
-        Retourne la liste de toutes les feuilles de l'arbre.
-
-        Returns:
-            list: Liste des objets feuilles de l'arbre.
-        """
+       
         return self.root.get_leaves_below()
 
     def update_bounds(self):
-        """
-        Met à jour les bornes (upper/lower) pour tout l'arbre.
-
-        Lance la propagation à partir de la racine.
-        """
+       
         self.root.update_bounds_below()
 
     def pred(self, x):
-        """Prédit la valeur pour un échantillon x en utilisant l'arbre."""
         return self.root.pred(x)
 
     def update_predict(self):
-        """MAJ la fonction de prédiction de l'arbre selon les feuilles."""
         self.update_bounds()
         leaves = self.get_leaves()  # Récupères les feuilles
         for leaf in leaves:  # Parcourt les feuilles

@@ -1,51 +1,49 @@
 #!/usr/bin/env python3
-"""Implémentation d'un arbre de décision simple."""
+"""Implementation of a random isolation forest."""
 
 import numpy as np
 Isolation_Random_Tree = __import__('10-isolation_tree').Isolation_Random_Tree
 
 
 class Isolation_Random_Forest():
-    """Classe pour implémenter une forêt d'arbres d'isolation aléatoires."""
+    """Class to implement a forest of random isolation trees."""
 
     def __init__(self, n_trees=100, max_depth=10, min_pop=1, seed=0):
         """
-        Initialise la forêt d'isolation aléatoire.
+        Initializes the random isolation forest.
 
         Args:
-            n_trees (int): Nombre d'arbres dans la forêt
-            max_depth (int): Profondeur maximale des arbres
-            min_pop (int): Population minimale pour diviser un nœud
-            seed (int): Graine pour la génération aléatoire
+            n_trees (int): Number of trees in the forest
+            max_depth (int): Maximum depth of the trees
+            min_pop (int): Minimum population to split a node
+            seed (int): Seed for random generation
         """
-        self.numpy_predicts = []
-        self.target = None
-        self.numpy_preds = None
+        self.numpy_preds = []
         self.n_trees = n_trees
         self.max_depth = max_depth
         self.seed = seed
 
     def predict(self, explanatory):
         """
-        Prédit les profondeurs moyennes pour les données d'entrée.
+        Predicts the average depths for the input data.
 
         Args:
-            explanatory: Données explicatives
+            explanatory: Explanatory data
 
         Returns:
-            Moyennes des prédictions de tous les arbres
+            Average of predictions from all trees
         """
         predictions = np.array([f(explanatory) for f in self.numpy_preds])
         return predictions.mean(axis=0)
 
     def fit(self, explanatory, n_trees=100, verbose=0):
         """
-        Entraîne la forêt d'isolation sur les données.
+        Trains the isolation forest on the data.
 
         Args:
-            explanatory: Données d'entraînement
-            n_trees (int): Nombre d'arbres à entraîner
-            verbose (int): Niveau de verbosité
+            explanatory: Training data
+            n_trees (int): Number of trees to train
+            verbose (int): Verbosity level
         """
         self.explanatory = explanatory
         self.numpy_preds = []
@@ -71,20 +69,19 @@ class Isolation_Random_Forest():
 
     def suspects(self, explanatory, n_suspects):
         """
-        Retourne les lignes avec les plus petites profondeurs moyennes.
+        Returns the rows with the smallest average depths.
 
         Args:
-            explanatory: Données explicatives
-            n_suspects (int): Nombre de suspects à retourner
+            explanatory: Explanatory data
+            n_suspects (int): Number of suspects to return
 
         Returns:
-            Les indices des n_suspects lignes avec les plus petites profondeurs
+            The n_suspects rows with the smallest depths and their depths
         """
         depths = self.predict(explanatory)
-        # Obtenir les indices triés par ordre croissant des profondeurs
+        # Get indices sorted by increasing order of depths
         sorted_i = np.argsort(depths)
-        # Retourner les n_suspects premiers indices (plus petites profondeurs)
+        # Return the first n_suspects indices (smallest depths)
         suspect_i = sorted_i[:n_suspects]
-        # Retourner aussi les profondeurs correspondantes
-        suspect_d = depths[suspect_i]
-        return suspect_i, suspect_d
+        # Return the corresponding rows and depths
+        return explanatory[suspect_i], depths[suspect_i]

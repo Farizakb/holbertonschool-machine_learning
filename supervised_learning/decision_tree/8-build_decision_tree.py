@@ -1,86 +1,86 @@
 #!/usr/bin/env python3
-"""Implémentation d'un arbre de décision simple."""
+"""Implementation of a simple decision tree."""
 
 import numpy as np
 
 
 class Node:
-    """Classe représentant un nœud interne d'un arbre de décision."""
+    """Class representing an internal node of a decision tree."""
 
     def __init__(self, feature=None, threshold=None, left_child=None,
                  right_child=None, is_root=False, depth=0):
-        """Initialise un nœud interne de l'arbre de décision."""
-        self.feature = feature              # Index de la feature pour split
-        self.threshold = threshold          # Seuil de split pour la feature
-        self.left_child = left_child        # Sous-arbre gauche (Node ou Leaf)
-        self.right_child = right_child      # Sous-arbre droit (Node ou Leaf)
-        self.is_leaf = False                # Indique si ce nœud est une leaf
-        self.is_root = is_root              # Indique si ce nœud est la racine
+        """Initializes an internal node of the decision tree."""
+        self.feature = feature              # Index of the feature for split
+        self.threshold = threshold          # Split threshold for the feature
+        self.left_child = left_child        # Left subtree (Node or Leaf)
+        self.right_child = right_child      # Right subtree (Node or Leaf)
+        self.is_leaf = False                # Indicates if this node is a leaf
+        self.is_root = is_root              # Indicates if this node is the root
         self.sub_population = None
-        self.depth = depth                  # Profondeur du nœud dans l'arbre
+        self.depth = depth                  # Depth of the node in the tree
 
     def max_depth_below(self):
-        """Retourne la profondeur maximale.
+        """Returns the maximum depth.
 
-        Méthode récursive qui compte la profondeur max d'un arbre
-        à partir d'un nœud donné
+        Recursive method that counts the max depth of a tree
+        starting from a given node
 
         Returns:
-            int: La plus grande valeur des résultats de la récursion
+            int: The largest value of the recursion results
         """
-        # Liste vide pour récupérer la profondeur max de chaque branche
+        # Empty list to retrieve the max depth of each branch
         result = []
-        # Si l'enfant gauche n'est pas vide
+        # If the left child is not empty
         if self.left_child is not None:
-            # Recursion dans l'enfant gauche et append le resultat
+            # Recursion in the left child and append the result
             result.append(self.left_child.max_depth_below())
-        if self.right_child is not None:  # Pareil pour la droite
+        if self.right_child is not None:  # Same for the right child
             result.append(self.right_child.max_depth_below())
 
         if not result:
             return 0
 
-        return max(result)  # Renvoie le plus grand résultat de la liste
+        return max(result)  # Returns the largest result in the list
 
     def count_nodes_below(self, only_leaves=False):
-        """Compte les nodes enfant d'un node donné.
+        """Counts the child nodes of a given node.
 
         Args:
             only_leaves (bool, optional):
-            indique si le retour dois être le nombre de node ou de feuille.
+            indicates if the return should be the number of nodes or leaves.
             Defaults to False.
 
         Returns:
-            int: nombre de node enfant ou de feuilles
+            int: number of child nodes or leaves
         """
         count = 0
 
-        # Parcourt les branches gauche récursivement
-        # tant que le node visé n'est pas None
+        # Traverse the left branches recursively
+        # as long as the targeted node is not None
         if self.left_child is not None:
             count += self.left_child.count_nodes_below(only_leaves)
 
-        # Parcourt les branches droite récursivement
-        # tant que le node visé n'est pas None
+        # Traverse the right branches recursively
+        # as long as the targeted node is not None
         if self.right_child is not None:
             count += self.right_child.count_nodes_below(only_leaves)
 
-        # Si on souhaite compter uniquement les feuilles
+        # If we want to count only leaves
         if only_leaves:
-            # Un nœud est une feuille s'il n'a pas d'enfants gauche ni droit
+            # A node is a leaf if it has no left or right children
             if self.left_child is None and self.right_child is None:
-                return 1  # Ce nœud est une feuille
+                return 1  # This node is a leaf
             else:
-                # Sinon, retourne la somme des feuilles
-                # trouvées dans les sous-arbres
+                # Otherwise, return the sum of the leaves
+                # found in the subtrees
                 return count
 
-        # Si self.left_child/right_child == None alors ajoute 1
-        # au nombre de node trouvé
+        # If self.left_child/right_child == None then add 1
+        # to the number of nodes found
         return 1 + count
 
     def __str__(self):
-        """Affiche le nœud et ses enfants sous forme de chaîne."""
+        """Displays the node and its children as a string."""
         s = f"-> node [feature={self.feature}, threshold={self.threshold}]"
         if self.is_root is True:
             s = f"root [feature={self.feature}, threshold={self.threshold}]"
@@ -94,7 +94,7 @@ class Node:
         return s
 
     def left_child_add_prefix(self, text):
-        """Ajoute un préfixe pour afficher le sous-arbre gauche."""
+        """Adds a prefix to display the left subtree."""
         lines = text.split("\n")
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:-1]:
@@ -102,19 +102,19 @@ class Node:
         return (new_text)
 
     def right_child_add_prefix(self, text):
-        """Ajoute un préfixe pour afficher le sous-arbre droit."""
+        """Adds a prefix to display the right subtree."""
         lines = text.split("\n")
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:-1]:
-            new_text += ("       "+x) + "\n"
+            new_text += ("       " + x) + "\n"
         return (new_text)
 
     def get_leaves_below(self):
         """
-        Retourne la liste de toutes les feuilles sous ce nœud (récursif).
+        Returns the list of all leaves under this node (recursive).
 
         Returns:
-            list: Liste des objets feuilles descendants.
+            list: List of descendant leaf objects.
         """
         result = []
         if self.left_child is not None:
@@ -129,41 +129,41 @@ class Node:
 
     def update_bounds_below(self):
         """
-        Met à jour récursivement les bornes (upper/lower) pour chaque nœud.
+        Recursively updates the bounds (upper/lower) for each node.
 
-        Initialise les bornes à la racine, puis propage les contraintes
-        de split à chaque enfant selon la branche (gauche/droite).
+        Initializes the bounds at the root, then propagates the split 
+        constraints to each child according to the branch (left/right).
         """
         if self.is_root:
-            self.upper = {0: np.inf}  # {0: +∞}
-            self.lower = {0: -1 * np.inf}  # {0: -∞}
-            # Racine : -∞ < X < +∞
+            self.upper = {0: np.inf}  # {0: +inf}
+            self.lower = {0: -1 * np.inf}  # {0: -inf}
+            # Root: -inf < X < +inf
 
         for child in [self.left_child, self.right_child]:
             if child is None:
                 continue
 
-            # Copie les bornes du parent (upper & lower)
+            # Copy parent bounds (upper & lower)
             child.upper = self.upper.copy()
             child.lower = self.lower.copy()
 
             if child == self.left_child:
-                # Enfant gauche : feature <= threshold
-                # MAJ de la borne inférieure
+                # Left child: feature > threshold
+                # Update lower bound
                 child.lower[self.feature] = self.threshold
             else:
-                # Enfant droit : feature > threshold
-                # MAJ de la borne supérieure
+                # Right child: feature <= threshold
+                # Update upper bound
                 child.upper[self.feature] = self.threshold
 
         for child in [self.left_child, self.right_child]:
             if child is not None:
-                child.update_bounds_below()  # Récursion
+                child.update_bounds_below()  # Recursion
 
     def update_indicator(self):
-        """MAJ l'attribut `indicator` avec une fonction.
+        """Updates the indicator attribute with a function.
 
-        qui vérifie si chaque échantillon respecte les bornes définies.
+        which checks if each sample respects the defined bounds.
         """
         def is_large_enough(x):
             """Check if all features in the input array `x`.
@@ -182,9 +182,9 @@ class Node:
             """
             return np.all(np.array([
                 np.greater(
-                    x[:, key], self.lower[key])  # x[:, key] > self.upper[key]
+                    x[:, key], self.lower[key])  # x[:, key] > self.lower[key]
                 for key in list(self.lower.keys())]),
-                          axis=0)  # axe des colonnes
+                          axis=0)  # column axis
 
         def is_small_enough(x):
             """Check if all features in the input array `x`.
@@ -206,25 +206,24 @@ class Node:
                 np.less_equal(
                     x[:, key], self.upper[key])  # x[:, key] <= self.upper[key]
                 for key in list(self.upper.keys())]),
-                          axis=0)  # axe des colonnes
+                          axis=0)  # column axis
 
         self.indicator = lambda x: np.all(
             np.array([is_large_enough(x),
                       is_small_enough(x)]), axis=0)
 
     def pred(self, x):
-        """Méthode qui suit les décisions prises au niveau de ce nœud.
+        """Method that follows the decisions made at this node level.
 
-        Si la valeur de la caractéristique de x est supérieure
-        au seuil (threshold), elle se dirige vers l'enfant gauche,
-        sinon vers l'enfant droit, et demande à cet enfant de continuer
-        la prédiction.
+        If the feature value of x is greater than the threshold, 
+        it goes to the left child, otherwise to the right child, 
+        and asks that child to continue the prediction.
 
         Args:
-            x (array-like): Un échantillon à prédire.
+            x (array-like): A sample to predict.
 
         Returns:
-            La prédiction retournée par la feuille atteinte.
+            The prediction returned by the leaf reached.
         """
         if x[self.feature] > self.threshold:
             return self.left_child.pred(x)
@@ -233,10 +232,10 @@ class Node:
 
 
 class Leaf(Node):
-    """Classe représentant une feuille de l'arbre de décision."""
+    """Class representing a leaf of the decision tree."""
 
     def __init__(self, value, depth=None):
-        """Initialise une feuille de l'arbre de décision."""
+        """Initializes a leaf of the decision tree."""
         super().__init__()
         self.value = value
         self.is_leaf = True
@@ -244,47 +243,47 @@ class Leaf(Node):
 
     def max_depth_below(self):
         """
-        Retourne la profondeur de la feuille.
+        Returns the depth of the leaf.
 
         Returns:
-            int: Profondeur de la feuille.
+            int: Depth of the leaf.
         """
         return self.depth
 
     def count_nodes_below(self, only_leaves=False):
-        """Compte le nombre de nœuds ou de feuilles."""
+        """Counts the number of nodes or leaves."""
         return 1
 
     def get_leaves_below(self):
         """
-        Retourne une liste contenant cette feuille.
+        Returns a list containing this leaf.
 
         Returns:
-            list: Liste contenant uniquement cette feuille.
+            list: List containing only this leaf.
         """
         return [self]
 
     def __str__(self):
         """
-        Retourne une représentation lisible de la feuille pour l'affichage.
+        Returns a readable representation of the leaf for display.
 
         Returns:
-            str: Description de la feuille avec sa valeur.
+            str: Description of the leaf with its value.
         """
         return f"-> leaf [value={self.value}]"
 
     def update_bounds_below(self):
         """
-        Méthode présente pour compatibilité avec Node.
+        Method present for compatibility with Node.
 
-        Ne fait rien pour une feuille.
+        Does nothing for a leaf.
         """
         pass
 
     def pred(self, x):
-        """Quand un échantillon arrive à une feuille, la prédiction est simple.
+        """When a sample reaches a leaf, the prediction is simple.
 
-        Elle retourne sa propre value
+        It returns its own value
 
         Args:
             x (Any): The input sample for which the prediction is to be made.
@@ -296,11 +295,11 @@ class Leaf(Node):
 
 
 class Decision_Tree():
-    """Classe principale pour l'arbre de décision."""
+    """Main class for the decision tree."""
 
     def __init__(self, max_depth=10, min_pop=1, seed=0,
                  split_criterion="random", root=None):
-        """Initialise un arbre de décision."""
+        """Initializes a decision tree."""
         self.rng = np.random.default_rng(seed)
         if root:
             self.root = root
@@ -315,52 +314,52 @@ class Decision_Tree():
 
     def depth(self):
         """
-        Retourne la profondeur maximale de l'arbre.
+        Returns the maximum depth of the tree.
 
         Returns:
-            int: Profondeur maximale de l'arbre.
+            int: Maximum depth of the tree.
         """
         return self.root.max_depth_below()
 
     def count_nodes(self, only_leaves=False):
-        """Compte les nœuds ou feuilles de l'arbre."""
+        """Counts the nodes or leaves of the tree."""
         return self.root.count_nodes_below(only_leaves=only_leaves)
 
     def __str__(self):
         """
-        Retourne une représentation lisible de l'arbre (racine).
+        Returns a readable representation of the tree (root).
 
         Returns:
-            str: Affichage de la racine de l'arbre.
+            str: Display of the tree root.
         """
         return self.root.__str__()
 
     def get_leaves(self):
         """
-        Retourne la liste de toutes les feuilles de l'arbre.
+        Returns the list of all the leaves of the tree.
 
         Returns:
-            list: Liste des objets feuilles de l'arbre.
+            list: List of the leaf objects of the tree.
         """
         return self.root.get_leaves_below()
 
     def update_bounds(self):
         """
-        Met à jour les bornes (upper/lower) pour tout l'arbre.
+        Updates the bounds (upper/lower) for the whole tree.
 
-        Lance la propagation à partir de la racine.
+        Starts the propagation from the root.
         """
         self.root.update_bounds_below()
 
     def pred(self, x):
-        """Prédit la valeur pour un échantillon x en utilisant l'arbre."""
+        """Predicts the value for a sample x using the tree."""
         return self.root.pred(x)
 
     def update_predict(self):
-        """MAJ la fonction de prédiction de l'arbre selon les feuilles."""
+        """Updates the prediction function of the tree according to the leaves."""
         self.update_bounds()
-        leaves = self.get_leaves()  # Récupères les feuilles
-        for leaf in leaves:  # Parcourt les feuilles
+        leaves = self.get_leaves()  # Retrieve the leaves
+        for leaf in leaves:  # Iterate through the leaves
             leaf.update_indicator()
         self.predict = lambda A: sum(
             leaf.indicator(A) * leaf.value
@@ -368,41 +367,40 @@ class Decision_Tree():
 
     def fit(self, explanatory, target, verbose=0):
         """
-        Entraîne l’arbre de décision sur les données d’entraînement.
+        Trains the decision tree on the training data.
 
-        Initialise les attributs explanatory et target,
-        crée la sous-population initiale, puis construit récursivement
-        l’arbre en répartissant les individus dans les nœuds
-        selon les critères de split, jusqu’aux feuilles.
-        Met à jour la fonction de prédiction
-        et affiche des informations de diagnostic si verbose=1.
+        Initializes the explanatory and target attributes, 
+        creates the initial sub-population, then recursively builds 
+        the tree by distributing individuals into nodes 
+        according to split criteria, until the leaves. 
+        Updates the prediction function and displays 
+        diagnostic information if verbose=1.
 
-        Rappel: un individus c'est un "objet/observation/ligne d'un dataset"
-        soumis aux répartitions de l'arbre.
+        Reminder: an individual is an "object/observation/line of a dataset" 
+        subject to the tree distributions.
         """
-        # Choisit la règle pour couper les nœuds #
-        if self.split_criterion == "random":  # Aléatoirement
+        # Choose the rule to split the nodes #
+        if self.split_criterion == "random":  # Randomly
             self.split_criterion = self.random_split_criterion
-        else:  # Critère Gini
+        else:  # Gini criterion
             self.split_criterion = self.Gini_split_criterion  # \!
         # --- --- --- --- --- --- --- --- --- #
-        # Stocke les données d'entrainement dans l'objet #
+        # Store the training data in the object #
         self.explanatory = explanatory
         self.target = target
         # --- --- --- --- --- --- --- --- --- #
-        # Créer un tableau de True de la même taille que target #
-        # Ça veut dire qu'au départ, tous les individus passent par la racine #
+        # Create an array of True the same size as target #
+        # This means that initially, all individuals pass through the root #
         self.root.sub_population = np.ones_like(self.target, dtype='bool')
         # --- --- --- --- --- --- --- --- --- #
-        # Prend le nœud courant prend le split selectionné, #
-        # sépare les individus entre fils gauche et droit,#
-        # appelle récursivement fit_node pour continuer jusqu'aux feuilles.#
-        # À chaque étape, les sub_population des nœuds enfants sont MAJ #
-        # pour savoir qui est encore présent. #
+        # Takes the current node, takes the selected split, #
+        # separates individuals between left and right children, #
+        # recursively calls fit_node to continue until the leaves. #
+        # At each step, the sub_population of child nodes are updated #
+        # to know who is still present. #
         self.fit_node(self.root)     # <--- to be defined later
         # --- --- --- --- --- --- --- --- --- #
-        # Met à jour la fonction de prédiction de l'arbre #
-        # en fonction des feuilles construites. #
+        # Updates the tree prediction function based on the constructed leaves. #
         self.update_predict()     # <--- defined in the previous task
         # --- --- --- --- --- --- --- --- --- #
         if verbose == 1:
@@ -416,18 +414,16 @@ class Decision_Tree():
 # --- --- --- --- --- --- --- --- --- --- --- --- --- #
 
     def np_extrema(self, arr):
-        """Retourne le minimum et le maximum d’un tableau numpy."""
+        """Returns the minimum and maximum of a numpy array."""
         return np.min(arr), np.max(arr)
 
     def random_split_criterion(self, node):
         """
-        Détermine aléatoirement une feature et un seuil de split pour un nœud.
+        Randomly determines a feature and a split threshold for a node.
 
-        Sélectionne une colonne (feature) au hasard parmi les
-        features disponibles,
-        puis choisit un seuil aléatoire entre la valeur
-        minimale et maximale de cette feature
-        pour la sous-population du nœud donné.
+        Selects a column (feature) randomly among the available features, 
+        then chooses a random threshold between the minimum and maximum 
+        value of this feature for the sub-population of the given node.
         """
         diff = 0
         while diff == 0:
@@ -442,15 +438,13 @@ class Decision_Tree():
 # --- --- --- --- --- --- --- --- --- --- --- --- --- #
 
     def fit_node(self, node):
-        """Construit récursivement l’arbre à partir du nœud donné.
+        """Recursively builds the tree from the given node.
 
-        Détermine la feature et le seuil de split pour le nœud,
-        sépare la sous-population
-        en branches gauche et droite, puis crée soit une feuille soit
-        un nœud enfant pour chaque branche
-        en fonction des critères d’arrêt (profondeur, taille, pureté).
-        Appelle récursivement fit_node
-        sur les nœuds enfants non-feuilles.
+        Determines the feature and split threshold for the node, 
+        separates the sub-population into left and right branches, 
+        then creates either a leaf or a child node for each branch 
+        according to the stopping criteria (depth, size, purity).
+        Recursively calls fit_node on non-leaf child nodes.
         """
         node.feature, node.threshold = self.split_criterion(node)
 
@@ -482,12 +476,11 @@ class Decision_Tree():
             self.fit_node(node.right_child)
 
     def get_leaf_child(self, node, sub_population):
-        """Crée une feuille pour la sous-population donnée.
-
-        avec la classe majoritaire comme valeur.
+        """Creates a leaf for the given sub-population
+        with the majority class as the value.
         """
-        # Calcule la classe majoritaire parmi les cibles
-        # des individus de la sous-population (mode)
+        # Calculates the majority class among the targets
+        # of individuals in the sub-population (mode)
         value = np.bincount(self.target[sub_population]).argmax()
         leaf_child = Leaf(value)
         leaf_child.depth = node.depth + 1
@@ -495,9 +488,8 @@ class Decision_Tree():
         return leaf_child
 
     def get_node_child(self, node, sub_population):
-        """Crée un nœud interne pour la sous-population donnée.
-
-        et met à jour sa profondeur.
+        """Creates an internal node for the given sub-population
+        and updates its depth.
         """
         n = Node()
         n.depth = node.depth + 1
@@ -505,43 +497,43 @@ class Decision_Tree():
         return n
 
     def accuracy(self, test_explanatory, test_target):
-        """Calculate la précision du modèle sur un jeu de données de test."""
+        """Calculates the model accuracy on a test dataset."""
         return np.sum(np.equal(self.predict(
             test_explanatory), test_target)) / test_target.size
 
     def possible_thresholds(self, node, feature):
         """
-        Calculate les seuils possibles pour une feature donnée dans un nœud.
+        Calculates the possible thresholds for a given feature in a node.
 
-        Les seuils sont les milieux entre chaque paire de valeurs uniques
-        de la feature considérée, pour la sous-population du nœud.
+        Thresholds are the midpoints between each pair of unique values 
+        of the considered feature, for the node's sub-population.
 
         Args:
-            node (Node): Le nœud courant.
-            feature (int): L'indice de la feature considérée.
+            node (Node): The current node.
+            feature (int): The index of the considered feature.
 
         Returns:
-            np.ndarray: Tableau des seuils possibles.
+            np.ndarray: Array of possible thresholds.
         """
         values = np.unique((self.explanatory[:, feature])[node.sub_population])
         return (values[1:] + values[: -1]) / 2
 
     def Gini_split_criterion_one_feature(self, node, feature):
         """
-        Calculate le meilleur seuil pour une feature selon l’indice de Gini.
+        Calculates the best threshold for a feature according to the Gini index.
 
-        Pour chaque seuil possible, calcule l’impureté de Gini pour les
-        sous-populations gauche et droite, puis retourne le seuil qui minimise
-        la moyenne pondérée des impuretés.
+        For each possible threshold, calculates the Gini impurity for the 
+        left and right sub-populations, then returns the threshold that 
+        minimizes the weighted average of the impurities.
 
         Args:
-            node (Node): Le nœud courant.
-            feature (int): L'indice de la feature considérée.
+            node (Node): The current node.
+            feature (int): The index of the considered feature.
 
         Returns:
-            tuple: (seuil optimal, valeur minimale de Gini)
+            tuple: (optimal threshold, minimum Gini value)
         """
-        n = node.sub_population.sum()  # nb d'individus
+        n = node.sub_population.sum()  # number of individuals
 
         threshold = self.possible_thresholds(node, feature)
         t = threshold.size
@@ -584,16 +576,16 @@ class Decision_Tree():
 
     def Gini_split_criterion(self, node):
         """
-        Détermine la meilleure feature et le meilleur seuil selon Gini.
+        Determines the best feature and the best threshold according to Gini.
 
-        Teste toutes les features et sélectionne celle qui donne la plus
-        faible impureté de Gini après le split.
+        Tests all features and selects the one that gives the lowest 
+        Gini impurity after the split.
 
         Args:
-            node (Node): Le nœud courant.
+            node (Node): The current node.
 
         Returns:
-            tuple: (indice de la feature, seuil optimal)
+            tuple: (feature index, optimal threshold)
         """
         X = np.array([self.Gini_split_criterion_one_feature(
             node, i) for i in range(self.explanatory.shape[1])])
