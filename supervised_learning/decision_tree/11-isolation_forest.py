@@ -64,10 +64,11 @@ class Isolation_Random_Forest():
             mean_depth = np.array(depths).mean()
             mean_nodes = np.array(nodes).mean()
             mean_leaves = np.array(leaves).mean()
-            print("Training finished.")
-            print(f"Mean depth : {mean_depth}")
-            print(f"Mean number of nodes : {mean_nodes}")
-            print(f"Mean number of leaves : {mean_leaves}")
+            print(f"""  Training finished.
+    - Mean depth                     : {mean_depth}
+    - Mean number of nodes           : {mean_nodes}
+    - Mean number of leaves          : {mean_leaves}""")
+
 
     def suspects(self, explanatory, n_suspects):
         """
