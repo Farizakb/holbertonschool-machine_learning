@@ -36,35 +36,33 @@ class Node:
         lines = text.split("\n")
         new_text = "    +---> " + lines[0] + "\n"
         for x in lines[1:]:
-            new_text += ("    |  " + x) + "\n"
+            if x:
+                new_text += ("    |  " + x) + "\n"
         return new_text
 
     def right_child_add_prefix(self, text):
-        """Add prefix for right child.."""
+        """Add prefix for right child."""
         lines = text.split("\n")
         new_text = "    +---> " + lines[0] + "\n"
         for x in lines[1:]:
-            new_text += ("       " + x) + "\n"
+            if x:
+                new_text += ("       " + x) + "\n"
         return new_text
 
     def __str__(self):
         """Return an ASCII representation."""
         if self.is_root:
-            label = (f"root [feature={self.feature}"
-                     f", threshold={self.threshold}]")
+            out = (f"root [feature={self.feature}, "
+                   f"threshold={self.threshold}]\n")
         else:
-            label = (f"node [feature={self.feature}"
-                     f", threshold={self.threshold}]")
+            out = (f"node [feature={self.feature}, "
+                   f"threshold={self.threshold}]\n")
 
-        result = label
         if self.left_child:
-            result += "\n" + self.left_child_add_prefix(str(self.left_child))\
-                    .rstrip("\n")
+            out += self.left_child_add_prefix(str(self.left_child))
         if self.right_child:
-            result += "\n" +\
-                    self.right_child_add_prefix(str(self.right_child))\
-                    .rstrip("\n")
-        return result
+            out += self.right_child_add_prefix(str(self.right_child))
+        return out
 
 
 class Leaf(Node):
