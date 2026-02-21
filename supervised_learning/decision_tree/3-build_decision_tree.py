@@ -31,11 +31,6 @@ class Node:
                 self.right_child.count_nodes_below(only_leaves=only_leaves) +
                 (0 if only_leaves else 1))
 
-    def get_leaves_below(self):
-        """Returns the leaves of the tree"""
-        return (self.left_child.get_leaves_below() +
-                self.right_child.get_leaves_below())
-
     def left_child_add_prefix(self, text):
         """Add prefix for left child."""
         lines = text.split("\n")
@@ -69,6 +64,15 @@ class Node:
             out += self.right_child_add_prefix(str(self.right_child))
         return out
 
+    def get_leaves_below(self):
+        """this method retrieves all the leaves"""
+        leaves_below = []
+        if self.left_child is not None:
+            leaves_below.extend(self.left_child.get_leaves_below())
+        if self.right_child is not None:
+            leaves_below.extend(self.right_child.get_leaves_below())
+        return leaves_below
+
 
 class Leaf(Node):
     """Class representing a leaf of a decision tree"""
@@ -88,13 +92,13 @@ class Leaf(Node):
         """Counts the number of nodes below the current node"""
         return 1
 
-    def get_leaves_below(self):
-        """Returns the leaves of the tree"""
-        return [self]
-
     def __str__(self):
         """Returns the string representation of the leaf"""
         return "leaf [value={}]".format(self.value)
+
+    def get_leaves_below(self):
+        """Returns the leaves of the tree"""
+        return [self]
 
 
 class Decision_Tree():
@@ -123,10 +127,10 @@ class Decision_Tree():
         """Counts the number of nodes in the decision tree"""
         return self.root.count_nodes_below(only_leaves=only_leaves)
 
-    def get_leaves(self):
-        """Returns the leaves of the tree"""
-        return self.root.get_leaves_below()
-
     def __str__(self):
         """Returns the string representation of the decision tree"""
         return self.root.__str__()
+
+    def get_leaves(self):
+        """Returns the leaves of the tree"""
+        return self.root.get_leaves_below()
