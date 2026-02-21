@@ -69,7 +69,6 @@ class Isolation_Random_Forest():
     - Mean number of nodes           : {mean_nodes}
     - Mean number of leaves          : {mean_leaves}""")
 
-
     def suspects(self, explanatory, n_suspects):
         """
         Returns the rows with the smallest average depths.
