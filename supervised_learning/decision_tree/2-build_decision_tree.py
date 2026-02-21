@@ -48,19 +48,23 @@ class Node:
         return new_text
 
     def __str__(self):
-        """Returns the string representation of the node"""
+        """Return an ASCII representation."""
         if self.is_root:
-            out = "root [feature={}, threshold={}]\n".format(self.feature,
-                                                             self.threshold)
+            label = (f"root [feature={self.feature}"
+                     f", threshold={self.threshold}]")
         else:
-            out = "node [feature={}, threshold={}]\n".format(self.feature,
-                                                             self.threshold)
+            label = (f"node [feature={self.feature}"
+                     f", threshold={self.threshold}]")
 
+        result = label
         if self.left_child:
-            out += self.left_child_add_prefix(self.left_child.__str__())
+            result += "\n" + self.left_child_add_prefix(str(self.left_child))\
+                    .rstrip("\n")
         if self.right_child:
-            out += self.right_child_add_prefix(self.right_child.__str__())
-        return out
+            result += "\n" +\
+                    self.right_child_add_prefix(str(self.right_child))\
+                    .rstrip("\n")
+        return result
 
 
 class Leaf(Node):
