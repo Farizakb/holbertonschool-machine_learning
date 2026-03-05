@@ -92,31 +92,27 @@ class Node:
         Initializes the bounds at the root, then propagates the split constraints
         to each child according to the branch (left/right).
         """
+        # Root bounds: -∞ < X < +∞
         if self.is_root:
             self.upper = {0: np.inf}  # {0: +∞}
             self.lower = {0: -1 * np.inf}  # {0: -∞}
-            # Racine : -∞ < X < +∞
-
         for child in [self.left_child, self.right_child]:
             if child is None:
                 continue
-
-            # Copie les bornes du parent (upper & lower)
+            # Copy bounds from parent
             child.upper = self.upper.copy()
             child.lower = self.lower.copy()
 
+            # Update bounds for left child
             if child == self.left_child:
-                # Enfant gauche : feature <= threshold
-                # MAJ de la borne inférieure
                 child.lower[self.feature] = self.threshold
             else:
-                # Enfant droit : feature > threshold
-                # MAJ de la borne supérieure
                 child.upper[self.feature] = self.threshold
 
+        # Recursively update bounds for children
         for child in [self.left_child, self.right_child]:
             if child is not None:
-                child.update_bounds_below()  # Récursion
+                child.update_bounds_below()
 
 
 class Leaf(Node):

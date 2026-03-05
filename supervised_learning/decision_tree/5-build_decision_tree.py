@@ -120,35 +120,26 @@ class Node:
         if each sample respects the defined bounds.
         """
         def is_large_enough(x):
-            """Check if all features in the input array `x`.
+            """
+            Check if all features in the input array `x` are greater than
+            their corresponding lower bounds.
             """
             return np.all(np.array([
                 np.greater(
                     x[:, key], self.lower[key])  # x[:, key] > self.upper[key]
                 for key in list(self.lower.keys())]),
-                          axis=0)  # axe des colonnes
+                          axis=0)  # axis=0
 
         def is_small_enough(x):
-            """Check if all features in the input array `x`.
-
-            are less or equal than their corresponding upper bounds.
-
-            Args:
-                x (np.ndarray): A 2D numpy array of shape
-                (n_samples, n_features), where each row represents
-                a sample and each column corresponds to a feature.
-
-            Returns:
-                np.ndarray: A boolean array of shape (n_samples,)
-                indicating for each sample whether all its features
-                are less or equal than the specified upper
-                bounds in `self.upper`.
+            """
+            Check if all features in the input array `x` are less than or equal
+            to their corresponding upper bounds.
             """
             return np.all(np.array([
                 np.less_equal(
                     x[:, key], self.upper[key])  # x[:, key] <= self.upper[key]
                 for key in list(self.upper.keys())]),
-                          axis=0)  # axe des colonnes
+                          axis=0)  # axis=0
 
         self.indicator = lambda x: np.all(
             np.array([is_large_enough(x),

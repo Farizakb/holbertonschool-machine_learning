@@ -151,6 +151,9 @@ class Node:
                       is_small_enough(x)]), axis=0)
 
     def pred(self, x):
+        """
+        Predicts the target value for a given input sample `x`.
+        """
         if x[self.feature] > self.threshold:
             return self.left_child.pred(x)
         else:
