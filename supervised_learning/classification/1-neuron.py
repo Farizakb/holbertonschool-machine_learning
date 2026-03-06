@@ -19,18 +19,33 @@ class Neuron:
             raise TypeError("nx must be an integer")
         if nx < 1:
             raise ValueError("nx must be a positive integer")
-        self._W = np.random.randn(1, nx)
-        self._b = 0
-        self._A = 0
+        self.__W = np.random.randn(1, nx)
+        self.__b = 0
+        self.__A = 0
 
     @property
     def W(self):
-        return self._W
-    
+        """
+            The weights vector for the neuron
+
+            :return: value for private attribute __W
+        """
+        return self.__W
+
     @property
     def b(self):
-        return self._b
+        """
+            The bias for the neuron
+
+            :return: value for private attribute __b
+        """
+        return self.__b
 
     @property
     def A(self):
-        return self._A
+        """
+            The activated output of the neuron (prediction)
+
+            :return: value for private attribute __A
+        """
+        return self.__A
