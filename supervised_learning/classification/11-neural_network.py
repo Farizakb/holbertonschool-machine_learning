@@ -81,5 +81,5 @@ class NeuralNetwork:
     def cost(self, Y, A):
         """ Calculates the cost of the neural network """
         m = Y.shape[1]
-        cost = -1/m * (np.dot(Y, np.log(A.T)) + np.dot((1 - Y), np.log(1.0000001 - A.T)))
+        cost = -1/m * np.sum(Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A))
         return np.squeeze(cost)
