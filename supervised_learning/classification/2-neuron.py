@@ -55,7 +55,7 @@ class Neuron:
         Performs the forward propagation step for the neuron
 
         :param X: Input data (numpy array of shape (nx, m))
-        :return: The activated output of the neuron (numpy array of shape (1, m))
+        :return: Activated output of the neuron (shape (1, m))
         """
         Z = np.dot(self.__W, X) + self.__b
         self.__A = 1 / (1 + np.exp(-Z))
