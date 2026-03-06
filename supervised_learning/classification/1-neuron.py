@@ -22,7 +22,7 @@ class Neuron:
         self._W = np.random.randn(1, nx)
         self._b = 0
         self._A = 0
-    
+
     @property
     def W(self):
         return self._W
