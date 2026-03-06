@@ -113,6 +113,21 @@ class Neuron:
         :param alpha: Learning rate (float)
         :return: None
         """
+        if not isinstance(iterations, int):
+            raise TypeError("iterations must be an integer")
+        if iterations < 0:
+            raise ValueError("iterations must be a positive integer")
+        if not isinstance(alpha, float):
+            raise TypeError("alpha must be a float")
+        if alpha < 0:
+            raise ValueError("alpha must be positive")
+
         for _ in range(iterations):
+            # run forward propagation
             A = self.forward_prop(X)
+            # run gradient descent
             self.gradient_descent(X, Y, A, alpha)
+            # run evaluate
+            result, cost = self.evaluate(X, Y)
+
+        return result, cost
