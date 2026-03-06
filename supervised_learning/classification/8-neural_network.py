@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-    Class NeuralNetwork
+    Class NeuralNetwork : NN with one hidden layer
+                          performing binary classification
 """
 
 import numpy as np
@@ -8,29 +9,31 @@ import numpy as np
 
 class NeuralNetwork:
     """
-        Class NeuralNetwork : define neural network performing binary classification
+        class NeuralNetwork
     """
 
-    def __init__(self, nx, layers):
+    def __init__(self, nx, nodes):
         """
-        class constructor
+            class constructor
+
+            :param nx: number of input features
+            :param nodes: number of nodes in the hidden layer
         """
+
         if type(nx) is not int:
             raise TypeError("nx must be an integer")
         if nx < 1:
             raise ValueError("nx must be a positive integer")
-        if type(layers) is not list:
-            raise TypeError("layers must be a list of integers")
-        if len(layers) == 0:
-            raise ValueError("layers must not be empty")
-        for i in layers:
-            if type(i) is not int:
-                raise TypeError("layers must be a list of integers")
-            if i < 1:
-                raise ValueError("layers must be a list of positive integers")
-        self.__W1 = np.random.randn(layers[0], nx) * 0.01
-        self.__b1 = np.zeros((layers[0], 1))
-        self.__A1 = 0
-        self.__W2 = np.random.randn(layers[1], layers[0]) * 0.01
-        self.__b2 = np.zeros((layers[1], 1))
-        self.__A2 = 0
+        if type(nodes) is not int:
+            raise TypeError("nodes must be an integer")
+        if nodes < 1:
+            raise ValueError("nodes must be a positive integer")
+
+        # Initialize public instance attribute
+        # W1 & W2 normal distribution
+        self.W1 = np.random.randn(nodes, nx)
+        self.b1 = np.zeros((nodes, 1))
+        self.A1 = 0
+        self.W2 = np.random.randn(1, nodes)
+        self.b2 = 0
+        self.A2 = 0
