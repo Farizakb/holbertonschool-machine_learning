@@ -121,12 +121,12 @@ class DeepNeuralNetwork:
             A_prev = cache["A{}".format(i-1)]
             dW = (1/m) * np.dot(dZ, A_prev.T)
             db = (1/m) * np.sum(dZ, axis=1, keepdims=True)
-            
+
             if self.__activation == 'sig':
                 derivative = A_prev * (1 - A_prev)
             elif self.__activation == 'tanh':
                 derivative = 1 - (A_prev ** 2)
-                
+ 
             dZ = np.dot(self.weights["W{}".format(i)].T, dZ) * derivative
 
             self.weights["W{}".format(i)] -= alpha * dW
