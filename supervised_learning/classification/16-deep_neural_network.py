@@ -4,6 +4,9 @@ DeepNeuralNetwork performing binary classification
 """
 
 
+import numpy as np
+
+
 class DeepNeuralNetwork:
     """
     Class that represents a deep neural network for binary classification
