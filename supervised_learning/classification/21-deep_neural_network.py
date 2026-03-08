@@ -3,7 +3,6 @@
 DeepNeuralNetwork performing binary classification
 """
 
-
 import numpy as np
 
 
@@ -27,7 +26,6 @@ class DeepNeuralNetwork:
         previous = nx
 
         for index, layer in enumerate(layers, 1):
-
             if type(layer) is not int or layer < 0:
                 raise TypeError("layers must be a list of positive integers")
 
@@ -67,7 +65,7 @@ class DeepNeuralNetwork:
         """
         self.__cache["A0"] = X
         for i in range(1, self.L + 1):
-            A_prev = self.__cache["A{}".format(i-1)]
+            A_prev = self.__cache["A{}".format(i - 1)]
             W = self.weights["W{}".format(i)]
             b = self.weights["b{}".format(i)]
             Z = np.dot(W, A_prev) + b
@@ -81,7 +79,7 @@ class DeepNeuralNetwork:
         Calculates the cost of the neural network
         """
         m = Y.shape[1]
-        cost = -1/m * np.sum(Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A))
+        cost = -1 / m * np.sum(Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A))
         return np.squeeze(cost)
 
     def evaluate(self, X, Y):
@@ -98,24 +96,20 @@ class DeepNeuralNetwork:
         Calculates one pass of gradient descent on the neural network
         """
         m = Y.shape[1]
-        back = {}
-
+        
+        # We process gradients backwards from layer L down to 1
         for i in range(self.L, 0, -1):
             A = cache["A{}".format(i)]
-            A_prev = cache["A{}".format(i-1)]
-            
+            A_prev = cache["A{}".format(i - 1)]
+
             if i == self.L:
                 dz = A - Y
             else:
-                W_next = self.weights["W{}".format(i+1)]
-                dz = np.matmul(W_next.T, dz) * A * (1 - A)
-            
-            dw = (1 / m) * np.matmul(dz, A_prev.T)
-            db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
-            
-            back["dw{}".format(i)] = dw
-            back["db{}".format(i)] = db
+                W_next = self.weights["W{}".format(i + 1)]
+                dz = np.dot(W_next.T, dz) * A * (1 - A)
 
-        for i in range(self.L, 0, -1):
-            self.__weights["W{}".format(i)] -= alpha * back["dw{}".format(i)]
-            self.__weights["b{}".format(i)] -= alpha * back["db{}".format(i)]
+            dw = (1 / m) * np.dot(dz, A_prev.T)
+            db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
+
+            self.__weights["W{}".format(i)] -= alpha * dw
+            self.__weights["b{}".format(i)] -= alpha * db
