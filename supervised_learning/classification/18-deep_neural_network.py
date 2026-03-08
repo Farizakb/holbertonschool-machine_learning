@@ -71,6 +71,7 @@ class DeepNeuralNetwork:
             W = self.weights["W{}".format(i)]
             b = self.weights["b{}".format(i)]
             Z = np.dot(W, A_prev) + b
-            self.cache["A{}".format(i)] = 1 / (1 + np.exp(-Z))
+            A = 1 / (1 + np.exp(-Z))
+            self.cache["A{}".format(i)] = A
 
-        return self.cache["A{}".format(self.L)], self.cache
+        return A, self.cache
