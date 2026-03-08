@@ -95,22 +95,27 @@ class DeepNeuralNetwork:
 
     def gradient_descent(self, Y, cache, alpha=0.05):
         """
-        Performs the gradient descent for the deep neural network
+        Calculates one pass of gradient descent on the neural network
         """
         m = Y.shape[1]
-        # derivative of final layer (output=self.L)
-        dZ = cache["A{}".format(self.L)] - Y
-        dW = (1/m) * np.dot(dZ, cache["A{}".format(self.L - 1)].T)
-        db = (1/m) * np.sum(dZ, axis=1, keepdims=True)
+        back = {}
 
-        self.weights["W{}".format(self.L)] -= alpha * dW
-        self.weights["b{}".format(self.L)] -= alpha * db
+        for i in range(self.L, 0, -1):
+            A = cache["A{}".format(i)]
+            A_prev = cache["A{}".format(i-1)]
+            
+            if i == self.L:
+                dz = A - Y
+            else:
+                W_next = self.weights["W{}".format(i+1)]
+                dz = np.matmul(W_next.T, dz) * A * (1 - A)
+            
+            dw = (1 / m) * np.matmul(dz, A_prev.T)
+            db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
+            
+            back["dw{}".format(i)] = dw
+            back["db{}".format(i)] = db
 
-        for i in range(self.L - 1, 0, -1):
-            dZ = np.dot(self.weights["W{}".format(i + 1)].T, dZ) * (
-                cache["A{}".format(i)] * (1 - cache["A{}".format(i)]))
-            dW = (1/m) * np.dot(dZ, cache["A{}".format(i - 1)].T)
-            db = (1/m) * np.sum(dZ, axis=1, keepdims=True)
-
-            self.weights["W{}".format(i)] -= alpha * dW
-            self.weights["b{}".format(i)] -= alpha * db
+        for i in range(self.L, 0, -1):
+            self.__weights["W{}".format(i)] -= alpha * back["dw{}".format(i)]
+            self.__weights["b{}".format(i)] -= alpha * back["db{}".format(i)]
