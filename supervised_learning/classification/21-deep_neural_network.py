@@ -96,8 +96,8 @@ class DeepNeuralNetwork:
         Calculates one pass of gradient descent on the neural network
         """
         m = Y.shape[1]
-        
-        # We process gradients backwards from layer L down to 1
+        back = {}
+
         for i in range(self.L, 0, -1):
             A = cache["A{}".format(i)]
             A_prev = cache["A{}".format(i - 1)]
@@ -111,5 +111,9 @@ class DeepNeuralNetwork:
             dw = (1 / m) * np.dot(dz, A_prev.T)
             db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
 
-            self.__weights["W{}".format(i)] -= alpha * dw
-            self.__weights["b{}".format(i)] -= alpha * db
+            back["dw{}".format(i)] = dw
+            back["db{}".format(i)] = db
+
+        for i in range(self.L, 0, -1):
+            self.__weights["W{}".format(i)] -= alpha * back["dw{}".format(i)]
+            self.__weights["b{}".format(i)] -= alpha * back["db{}".format(i)]
