@@ -126,7 +126,7 @@ class DeepNeuralNetwork:
                 derivative = A_prev * (1 - A_prev)
             elif self.__activation == 'tanh':
                 derivative = 1 - (A_prev ** 2)
- 
+
             dZ = np.dot(self.weights["W{}".format(i)].T, dZ) * derivative
 
             self.weights["W{}".format(i)] -= alpha * dW
