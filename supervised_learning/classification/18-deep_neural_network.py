@@ -66,12 +66,12 @@ class DeepNeuralNetwork:
         Performs the forward propagation for the deep neural network
         """
         self.__cache["A0"] = X
-        for i in range(1, self.L + 1):
-            A_prev = self.cache["A{}".format(i-1)]
-            W = self.weights["W{}".format(i)]
-            b = self.weights["b{}".format(i)]
+        for i in range(1, self.L):
+            A_prev = self.cache["A{}".format(i)]
+            W = self.weights["W{}".format(i+1)]
+            b = self.weights["b{}".format(i+1)]
             Z = np.dot(W, A_prev) + b
             A = 1 / (1 + np.exp(-Z))
-            self.__cache["A{}".format(i)] = A
+            self.__cache["A{}".format(i+1)] = A
 
         return A, self.cache
