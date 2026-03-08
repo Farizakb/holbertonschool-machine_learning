@@ -4,7 +4,7 @@ DeepNeuralNetwork performing binary classification
 """
 
 import numpy as np
-
+import pickle 
 
 class DeepNeuralNetwork:
     """
