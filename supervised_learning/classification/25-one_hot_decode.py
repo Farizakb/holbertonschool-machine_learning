@@ -3,8 +3,8 @@
     One-Hot Decode
 """
 
-
 import numpy as np
+
 
 def one_hot_decode(one_hot):
     """

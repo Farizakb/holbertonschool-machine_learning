@@ -3,8 +3,8 @@
     One-Hot Encode
 """
 
-
 import numpy as np
+
 
 def one_hot_encode(Y, classes):
     """
