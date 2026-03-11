@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""
+    Train
+"""
+
+import tensorflow.keras as K
+
+
+def train_model(network, data, labels, batch_size, epochs,
+                validation_data=None, early_stopping=False, patience=0,
+                verbose=True, shuffle=False):
+    """
+        Function that trains a model using mini-batch gradient descent
+
+        :param network: model to train
+        :param data: ndarray, shape(m, nx), input data
+        :param labels: ndarray, shape(m,classes), labels
+        :param batch_size: size of the batch
+        :param epochs: number of passes through data for mini-bath
+        :param verbose: boolean, print or not during training
+        :param shuffle: boolean, shuffle or not every epoch
+        :param validation_data: tuple, (x_val, y_val)
+        :param early_stopping: boolean, use early stopping or not
+        :param patience: number of epochs to wait before early stopping
+
+        :return: History
+    """
+
+    callbacks = []
+    if early_stopping and validation_data:
+        callbacks.append(K.callbacks.EarlyStopping(monitor='val_loss', patience=patience))
+        
+    history = network.fit(x=data,
+                          y=labels,
+                          epochs=epochs,
+                          batch_size=batch_size,
+                          verbose=verbose,
+                          shuffle=shuffle,
+                          validation_data=validation_data)
+
+    return history
