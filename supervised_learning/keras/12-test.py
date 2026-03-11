@@ -15,6 +15,6 @@ def test_model(network, data, labels, verbose=True):
         :param labels: ndarray, shape(m,classes), labels
         :param verbose: boolean, print or not during testing
 
-        :return: None
+        :return: tuple, (loss, accuracy)
     """
     return network.evaluate(x=data, y=labels, verbose=verbose)
