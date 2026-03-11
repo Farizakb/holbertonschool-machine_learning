@@ -34,7 +34,7 @@ def train_model(network, data, labels, batch_size, epochs,
     callbacks = []
     if early_stopping and validation_data is not None:
         early_stop = K.callbacks.EarlyStopping(monitor='val_loss',
-                                                patience=patience)
+                                               patience=patience)
         callbacks.append(early_stop)
 
     if learning_rate_decay and validation_data:
@@ -43,7 +43,7 @@ def train_model(network, data, labels, batch_size, epochs,
             return lr
 
         inv_time_decay = K.callbacks.LearningRateScheduler(scheduler,
-                                                            verbose=1)
+                                                           verbose=1)
 
         callbacks.append(inv_time_decay)
 
