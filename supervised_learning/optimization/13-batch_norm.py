@@ -23,4 +23,4 @@ def batch_norm(Z, gamma, beta, epsilon):
     Z_norm = (Z - mean) / np.sqrt(variance + epsilon)
     # Scale and shift
     Z_norm = gamma * Z_norm + beta
-    return Z_norm, mean, variance
+    return Z_norm
