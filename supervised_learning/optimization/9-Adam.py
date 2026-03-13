@@ -27,7 +27,11 @@ def update_variables_Adam(alpha, beta1, beta2, epsilon, var, grad, v, s, t):
     # Update moving average of second moments
     s = beta2 * s + (1 - beta2) * (grad ** 2)
 
+    # Bias correction
+    v_corrected = v / (1 - beta1 ** t)
+    s_corrected = s / (1 - beta2 ** t)
+
     # Update variables
-    var = var - alpha * v / (np.sqrt(s) + epsilon)
+    var = var - alpha * v_corrected / (np.sqrt(s_corrected) + epsilon)
 
     return var, v, s
