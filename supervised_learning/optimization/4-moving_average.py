@@ -25,4 +25,4 @@ def moving_average(data, beta):
         v = beta * v + (1 - beta) * x
         v_corrected = v / (1 - beta ** (t + 1))
         v_history.append(v_corrected)
-    return np.array(v_history)
+    return v_history
