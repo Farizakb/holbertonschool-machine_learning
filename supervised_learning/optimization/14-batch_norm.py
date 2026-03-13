@@ -9,24 +9,24 @@ import tensorflow as tf
 def create_batch_norm_layer(prev, n, activation):
     """
     Creates a batch normalization layer for a neural network in TensorFlow.
-    
+
     Args:
         prev: The activated output of the previous layer.
         n: The number of nodes in the layer to be created.
         activation: The activation function to be used on the output.
-        
+
     Returns:
         A tensor of the activated output for the layer.
     """
     # 1. Define the kernel initializer
     initializer = tf.keras.initializers.VarianceScaling(mode='fan_avg')
 
-    # 2. Create the base Dense layer 
-    # Note: We disable the internal bias because Batch Norm's 'beta' handles the offset
+    # 2. Create the base Dense layer
+
     dense_layer = tf.keras.layers.Dense(
-        units=n, 
+        units=n,
         kernel_initializer=initializer,
-        use_bias=False 
+        use_bias=False
     )
 
     # Apply the linear transformation (Wx)
