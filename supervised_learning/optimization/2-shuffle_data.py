@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-    Function to shuffle the data
+    Function shuffles data
 """
 
 import numpy as np
@@ -8,13 +8,15 @@ import numpy as np
 
 def shuffle_data(X, Y):
     """
-        Method to shuffle the data
+        Function that shuffles the data points in two matrices the same way
 
-        :param X: ndarray, shape(m,nx) to shuffle
-                m : number of data points
-                nx: number of features
-        :param Y: ndarray, shape(m,) to shuffle
+        :param X: ndarray, shape(m, nx) to shuffle
+        :param Y: ndarray, shape(m, ny) to shuffle
 
-        :return: shuffled data
+        :return: shuffled X and Y matrices
     """
-    return np.random.permutation(X), np.random.permutation(Y)
+    m = X.shape[0]
+    permutted_index = np.random.permutation(m)
+    X_shuffled = X[permutted_index]
+    Y_shuffled = Y[permutted_index]
+    return X_shuffled, Y_shuffled
