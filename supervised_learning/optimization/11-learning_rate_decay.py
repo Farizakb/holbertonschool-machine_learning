@@ -16,4 +16,4 @@ def learning_rate_decay(alpha, decay_rate, global_step, decay_step):
     :param decay_step: int, number of iterations after which to decay the learning rate
     :return: float, new learning rate
     """
-    return alpha * (1 / (1 + decay_rate * global_step / decay_step))
+    return alpha * (1 / (1 + decay_rate * (global_step // decay_step)))
