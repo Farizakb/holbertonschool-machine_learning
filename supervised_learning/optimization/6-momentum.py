@@ -3,7 +3,6 @@
     Momentum Optimization TensorFlow
 """
 
-import numpy as np
 import tensorflow as tf
 
 
