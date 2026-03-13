@@ -17,7 +17,7 @@ def moving_average(data, beta):
         :param data: ndarray, shape (t,) to calculate moving average
         :param beta: float, weight used for moving average
 
-        :return: ndarray, shape (t,) containing the moving averages of data
+        :return: list, shape (t,) containing the moving averages of data
     """
     v = 0
     v_history = []
