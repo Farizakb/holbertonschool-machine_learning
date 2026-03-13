@@ -14,8 +14,10 @@ def normalize(X, m, s):
                 m : number of data points
                 nx: number of features
         :param m: ndarray, shape(nx,) containing the mean of each feature
-        :param s: ndarray, shape(nx,) containing the standard deviation of each feature
+        :param s: ndarray, shape(nx,) containing the standard deviation 
+            of each feature
 
         :return: normalized data
     """
     return (X - m) / s
+    
