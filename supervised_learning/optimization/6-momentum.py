@@ -12,6 +12,10 @@ def create_momentum_op(alpha, beta1):
 
     :param alpha: float, learning rate
     :param beta1: float, momentum hyperparameter
-    :return: tf.train.Optimizer instance
+    Returns:
+        optimizer: Optimizer object for gradient descent with momentum.
     """
-    return tf.train.MomentumOptimizer(learning_rate=alpha, momentum=beta1)
+    optimizer = tf.keras.optimizers.SGD(
+        learning_rate=alpha,
+        momentum=beta1)
+    return optimizer
