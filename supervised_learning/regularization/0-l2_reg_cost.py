@@ -1,27 +1,21 @@
 #!/usr/bin/env python3
 """
-L2 Regularization Cost
+    L2 regularization
 """
 
 import numpy as np
 
+
 def l2_reg_cost(cost, lambtha, weights, L, m):
     """
-    Calculates the L2 regularization cost for a neural network.
+        Function that calculates the cost of a network with L2 Regularization
 
-    Args:
-        lambtha (float): The regularization hyperparameter.
-        weights (dict): Dictionary containing the weights of the network.
-        L (int): The number of layers in the network.
-        m (int): The number of examples in the training set.
-
-    Returns:
-        float: The L2 regularization cost.
+        FORMULA = loss + lamda/2m * sum||w||**2
     """
-    l2_cost = 0
-    for l in range(1, L + 1):
-        l2_cost += np.sum(np.square(weights['W' + str(l)]))
-    
-    l2_cost = cost + (lambtha / (2 * m)) * l2_cost
-    
-    return l2_cost
+    reg_term = 0
+
+    for i in range(1, L + 1):
+        reg_term += np.sum(np.square(weights['W' + str(i)]))
+    cost_L2 = cost + (lambtha / (2 * m)) * reg_term
+
+    return cost_L2
