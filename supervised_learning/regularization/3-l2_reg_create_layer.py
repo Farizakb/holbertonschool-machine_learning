@@ -19,7 +19,7 @@ def l2_reg_create_layer(prev, n, activation, lambtha):
         K.layers.Dense(n,
                         activation=activation,
                         kernel_initializer=initializer,
-                        kernel_regularizer=tf.keras.regularizers.l2(lambtha),
+                        kernel_regularizer=K.regularizers.l2(lambtha),
                         name="layer"))
 
     # apply layer to input
