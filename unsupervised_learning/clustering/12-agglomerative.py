@@ -1,31 +1,24 @@
 #!/usr/bin/env python3
-"""
-Defines function that performs agglomerative clustering on a dataset
-"""
-
-
+"""Agglomerative Module"""
 import scipy.cluster.hierarchy
 import matplotlib.pyplot as plt
 
 
 def agglomerative(X, dist):
+    """Performs agglomerative clustering on a dataset:
+
+    X is a numpy.ndarray of shape (n, d) containing the dataset
+    dist is the maximum cophenetic distance for all clusters
+    Performs agglomerative clustering with Ward linkage
+    Displays the dendrogram with each cluster displayed in a different color
+
+    Returns: clss, a numpy.ndarray of shape (n,) containing the cluster indices
+    for each data point
     """
-    Performs agglomerative clustering on a dataset
+    dendrogram = scipy.cluster.hierarchy.linkage(X, method='ward')
+    scipy.cluster.hierarchy.dendrogram(dendrogram, color_threshold=dist)
 
-    parameters:
-        X [numpy.ndarray of shape (n, d)]:
-            contains the dataset that will be used for K-means clustering
-            n: the number of data points
-            d: the number of dimensions for each data point
-        dist [positive int]:
-            the maximum cophenetic distance for all clusters
+    plt.show()
 
-    performs agglomerative clustering with Ward linkage
-
-    displays the dendrogram with each cluster displayed in a different color
-
-    returns:
-        clss [numpy.ndarray of shape (n,)]:
-            containing the cluster indices for each data point
-    """
-    return None
+    return scipy.cluster.hierarchy.fcluster(dendrogram, dist,
+                                            criterion='distance')
