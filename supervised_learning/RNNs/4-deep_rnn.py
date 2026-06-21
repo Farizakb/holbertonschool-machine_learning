@@ -28,8 +28,8 @@ def deep_rnn(rnn_cells, X, h_0):
     Y = np.zeros((X.shape[0], X.shape[1], rnn_cells[-1].by.shape[1]))
 
     for i, x_t in enumerate(X):
-        for l, rnn_cell in enumerate(rnn_cells):
-            H[i + 1, l], Y[i] = rnn_cell.forward(H[i, l], x_t)
-            x_t = H[i + 1, l]
+        for layer, rnn_cell in enumerate(rnn_cells):
+            H[i + 1, layer], Y[i] = rnn_cell.forward(H[i, layer], x_t)
+            x_t = H[i + 1, layer]
 
     return H, Y
