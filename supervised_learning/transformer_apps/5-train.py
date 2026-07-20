@@ -1,138 +1,167 @@
 #!/usr/bin/env python3
-"""
-Defines function that creates and trains a transformer for machine translation
-of Portuguese to English using previously created dataset
-"""
+"""Creates and trains a transformer for machine translation"""
+import tensorflow as tf
 
-
-import tensorflow.compat.v2 as tf
 Dataset = __import__('3-dataset').Dataset
 create_masks = __import__('4-create_masks').create_masks
 Transformer = __import__('5-transformer').Transformer
 
 
-class LearningSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
-    """
-    Establishes learning rate schedule for training transformer model
+class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
+    """Learning rate schedule used in the original transformer paper"""
 
-    Utilizes given function for learning rate:
-    l_rate = (dm ** -0.5) * min(
-                     (step_num ** -0.5), (step_num * warmup_steps ** -1.5))
-    """
     def __init__(self, dm, warmup_steps=4000):
-        """
-        Class constructor
+        """Initializes the schedule
 
-        parameters:
-            dm [int]:
-                dimensionality of the model
-            warmup_steps [int]:
-                number of warmup steps, default=4000
+        Args:
+            dm: the dimensionality of the model
+            warmup_steps: the number of warmup steps
         """
-        super(LearningSchedule, self).__init__()
-
+        super(CustomSchedule, self).__init__()
         self.dm = tf.cast(dm, tf.float32)
         self.warmup_steps = warmup_steps
 
     def __call__(self, step):
+        """Computes the learning rate for the given step
+
+        Args:
+            step: the current training step
+
+        Returns:
+            the learning rate
         """
-        Evaluates the learning rate for the given step
-        """
-        rsqrt_dm = tf.math.rsqrt(self.dm)
-        rsqrt_step_arg = tf.math.rsqrt(step)
-        warmup_step_arg = step * (self.warmup_steps ** -1.5)
-        l_rate = rsqrt_dm * tf.math.minimum(rsqrt_step_arg, warmup_step_arg)
-        return l_rate
+        step = tf.cast(step, tf.float32)
+        arg1 = tf.math.rsqrt(step)
+        arg2 = step * (self.warmup_steps ** -1.5)
+
+        return tf.math.rsqrt(self.dm) * tf.math.minimum(arg1, arg2)
 
 
 def train_transformer(N, dm, h, hidden, max_len, batch_size, epochs):
-    """
-    Creates and trains a transformer for machine translation
-        of Portuguese to English using previously created dataset
+    """Creates and trains a transformer model for machine translation
 
-    parameters:
-        N [int]:
-            number of blocks in the encoder and decoder
-        dm [int]:
-            dimensionality of the model
-        h [int]:
-            number of heads
-        hidden [int]:
-            number of hidden units in the fully connected layers
-        max_len [int]:
-            maximum number of tokens per sequence
-        batch_size [int]:
-            batch size used for training
-        epochs [int]:
-            number of epochs to train for
-    returns:
-        the trained model
+    Args:
+        N: the number of blocks in the encoder and decoder
+        dm: the dimensionality of the model
+        h: the number of heads
+        hidden: the number of hidden units in the fully connected layers
+        max_len: the maximum number of tokens per sequence
+        batch_size: the batch size for training
+        epochs: the number of epochs to train for
+
+    Returns:
+        the trained transformer model
     """
     data = Dataset(batch_size, max_len)
+
     input_vocab = data.tokenizer_pt.vocab_size + 2
     target_vocab = data.tokenizer_en.vocab_size + 2
-    # encoder = data.tokenizer_pt
-    # decoder = data.tokenizer_en
 
-    transformer = Transformer(N, dm, h, hidden,
-                              input_vocab, target_vocab,
-                              max_len, max_len)
+    transformer = Transformer(
+        N, dm, h, hidden, input_vocab, target_vocab, max_len, max_len
+    )
 
-    learning_rate = LearningSchedule(dm)
+    learning_rate = CustomSchedule(dm)
+    optimizer = tf.keras.optimizers.Adam(
+        learning_rate=learning_rate,
+        beta_1=0.9,
+        beta_2=0.98,
+        epsilon=1e-9
+    )
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate,
-                                         beta_1=0.9,
-                                         beta_2=0.98,
-                                         epsilon=1e-9)
-    losses = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True,
-                                                           reduction='none')
+    loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
+        from_logits=True, reduction='none'
+    )
 
-    def loss_function(actual, prediction):
+    def loss_function(real, pred):
+        """Computes the loss while ignoring padded tokens
+
+        Args:
+            real: tensor with the true labels
+            pred: tensor with the predicted logits
+
+        Returns:
+            the masked mean loss
         """
-        Calculate the loss from actual value and the prediction
-        """
-        mask = tf.math.logical_not(tf.math.equal(actual, 0))
-        loss = losses(actual, prediction)
+        mask = tf.math.logical_not(tf.math.equal(real, 0))
+        loss = loss_object(real, pred)
         mask = tf.cast(mask, dtype=loss.dtype)
-        loss *= mask
+        loss = loss * mask
+
         return tf.reduce_sum(loss) / tf.reduce_sum(mask)
 
-    def accuracy_function(actual, prediction):
+    def accuracy_function(real, pred):
+        """Computes the accuracy while ignoring padded tokens
+
+        Args:
+            real: tensor with the true labels
+            pred: tensor with the predicted logits
+
+        Returns:
+            the masked mean accuracy
         """
-        Calculates the accuracy of the prediction
-        """
-        accuracies = tf.equal(actual, tf.argmax(prediction, axis=2))
-        mask = tf.math.logical_not(tf.math.equal(actual, 0))
+        accuracies = tf.equal(real, tf.argmax(pred, axis=2))
+        mask = tf.math.logical_not(tf.math.equal(real, 0))
         accuracies = tf.math.logical_and(mask, accuracies)
+
         accuracies = tf.cast(accuracies, dtype=tf.float32)
         mask = tf.cast(mask, dtype=tf.float32)
+
         return tf.reduce_sum(accuracies) / tf.reduce_sum(mask)
 
     train_loss = tf.keras.metrics.Mean(name='train_loss')
-    train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(
-        name='train_accuracy')
+    train_accuracy = tf.keras.metrics.Mean(name='train_accuracy')
+
+    signature = [
+        tf.TensorSpec(shape=(None, None), dtype=tf.int64),
+        tf.TensorSpec(shape=(None, None), dtype=tf.int64),
+    ]
+
+    @tf.function(input_signature=signature)
+    def train_step(inputs, target):
+        """Performs a single training step
+
+        Args:
+            inputs: tensor with the batch of Portuguese sentences
+            target: tensor with the batch of English sentences
+        """
+        target_input = target[:, :-1]
+        target_real = target[:, 1:]
+
+        encoder_mask, combined_mask, decoder_mask = create_masks(
+            inputs, target_input
+        )
+
+        with tf.GradientTape() as tape:
+            predictions = transformer(
+                inputs, target_input, True,
+                encoder_mask, combined_mask, decoder_mask
+            )
+            loss = loss_function(target_real, predictions)
+
+        gradients = tape.gradient(loss, transformer.trainable_variables)
+        optimizer.apply_gradients(
+            zip(gradients, transformer.trainable_variables)
+        )
+
+        train_loss(loss)
+        train_accuracy(accuracy_function(target_real, predictions))
 
     for epoch in range(epochs):
-        batch = 0
-        for (input, target) in data.data_train:
-            target_input = target[:, :-1]
-            target_actual = target[:, 1:]
-            encoder_mask, look_ahead_mask, decoder_mask = create_masks(
-                input, target_input)
-            with tf.GradientTape() as tape:
-                prediction = transformer(input, target_input, True,
-                                         encoder_mask, look_ahead_mask,
-                                         decoder_mask)
-                loss = loss_function(target_actual, prediction)
-            gradients = tape.gradient(loss, transformer.trainable_variables)
-            optimizer.apply_gradients(zip(
-                gradients, transformer.trainable_variables))
-            t_loss = train_loss(loss)
-            t_accuracy = train_accuracy(target_actual, prediction)
-            if batch % 50 is 0:
-                print("Epoch {}, batch {}: loss {} accuracy {}".format(
-                    epoch, batch, t_loss, t_accuracy))
-            batch += 1
-        print("Epoch {}: loss {} accuracy {}".format(
-            epoch, t_loss, t_accuracy))
+        train_loss.reset_states()
+        train_accuracy.reset_states()
+
+        for batch, (inputs, target) in enumerate(data.data_train):
+            train_step(inputs, target)
+
+            if batch % 50 == 0:
+                print('Epoch {}, batch {}: loss {} accuracy {}'.format(
+                    epoch + 1, batch,
+                    train_loss.result(), train_accuracy.result()
+                ))
+
+        print('Epoch {}: loss {} accuracy {}'.format(
+            epoch + 1, train_loss.result(), train_accuracy.result()
+        ))
+
     return transformer
