@@ -4,52 +4,46 @@ Defines function that performs Q-learning
 """
 
 
-import gym
+
 import numpy as np
+epsilon_greedy = __import__('2-epsilon_greedy').epsilon_greedy
 
 
-def train(env, Q, episodes=5000, max_steps=100, alpha=0.1, gamma=0.99,
-          epsilon=1, min_epsilon=0.1, epsilon_decay=0.05):
+def train(env, Q, episodes=5000, max_steps=100, alpha=0.1, gamma=0.99, epsilon=1,
+          min_epsilon=0.1, epsilon_decay=0.05):
     """
-    Performs Q-learning
-
-    returns:
-        Q, total_rewards
+    Trains the agent using Q-learning on the provided FrozenLake environment.
     """
     total_rewards = []
-    max_epsilon = epsilon
-    for episode in range(episodes):
-        current_state = env.reset()
-        done = False
 
-        total_episode_reward = 0
+    for episode in range(episodes):
+        state = env.reset()[0]
+        episode_reward = 0
 
         for step in range(max_steps):
-            p = np.random.uniform(0, 1)
-            if p < epsilon:
-                # exploring
-                action = np.random.randint(Q.shape[1])
-            else:
-                # exploiting
-                action = np.argmax(Q[current_state, :])
+            # Select action using epsilon-greedy policy
+            action = epsilon_greedy(Q, state, epsilon)
 
-            next_state, reward, done, _ = env.step(action)
+            # Perform action and observe the new state and reward
+            next_state, reward, done, _, _ = env.step(action)
 
+            # Modify reward if the agent falls into a hole
             if done and reward == 0:
                 reward = -1
 
-            Q[current_state, action] = (
-                Q[current_state, action] * (1 - alpha) + alpha * (
-                    reward + gamma * np.max(Q[next_state, :])))
-            total_episode_reward += reward
+            # Update Q-value using the Q-learning formula
+            best_next_action = np.argmax(Q[next_state])
+            Q[state, action] = Q[state, action] + alpha * (reward + gamma * Q[next_state, best_next_action] - Q[state, action])
+
+            # Update the current state and total reward
+            state = next_state
+            episode_reward += reward
 
             if done:
                 break
 
-            current_state = next_state
-
-        epsilon = (min_epsilon + (max_epsilon - min_epsilon) *
-                   np.exp(-epsilon_decay * episode))
-        total_rewards.append(total_episode_reward)
+        # Decay epsilon
+        epsilon = max(min_epsilon, epsilon * (1 - epsilon_decay))
+        total_rewards.append(episode_reward)
 
     return Q, total_rewards

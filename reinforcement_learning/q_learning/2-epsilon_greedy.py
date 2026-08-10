@@ -4,22 +4,19 @@ Defines function that uses epsilon-greedy to determine the next action
 """
 
 
-import gym
 import numpy as np
 
 
 def epsilon_greedy(Q, state, epsilon):
     """
-    Uses epsilon-greedy to determine the next action
-
-    returns:
-        the next action index
+    Uses epsilon-greedy policy to select the next action.
     """
-    p = np.random.uniform(0, 1)
-    if p < epsilon:
-        # exploring
+    # Decide whether to explore or exploit
+    if np.random.uniform(0, 1) < epsilon:
+        # Exploration: choose a random action
         action = np.random.randint(Q.shape[1])
     else:
-        # exploiting
-        action = np.argmax(Q[state, :])
+        # Exploitation: choose the best action from Q-table
+        action = np.argmax(Q[state])
+
     return action
