@@ -4,7 +4,6 @@ Defines function to perform the Monte Carlo algorithm
 """
 
 
-import gym
 import numpy as np
 
 

@@ -4,7 +4,6 @@ Defines function to perform the SARSA(λ) algorithm
 """
 
 
-import gym
 import numpy as np
 
 

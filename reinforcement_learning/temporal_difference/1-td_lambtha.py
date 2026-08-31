@@ -4,7 +4,6 @@ Defines function to perform the TD(λ) algorithm
 """
 
 
-import gym
 import numpy as np
 
 
