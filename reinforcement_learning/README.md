@@ -10,3 +10,22 @@ This directory contains initial work with reinforcement learning through Q-learn
 3. [Q-learning](/reinforcement_learning/q_learning/3-q_learning.py)
 4. [Play](/reinforcement_learning/q_learning/4-play.py)
 
+## deep_q_learning
+This directory contains expands on Q-learning with neural networks to allow for deep reinforcement learning:
+
+0. [Breakout](/reinforcement_learning/eep_q_learning/train.py)
+
+## temporal_difference
+This directory contains work with temporal difference:
+
+0. [Monte Carlo](/reinforcement_learning/temporal_difference/0-monte_carlo.py)
+1. [TD(λ)](/reinforcement_learning/temporal_difference/1-td_lambtha.py)
+2. [SARSA(λ)](/reinforcement_learning/temporal_difference/2-sarsa_lambtha.py)
+
+## policy_gradients
+This directory contains work with policy gradients:
+
+0. [Simple Policy Function](/reinforcement_learning/policy_gradients/policy_gradient.py)
+1. [Compute the Monte Carlo Policy Gradient](/reinforcement_learning/policy_gradients/policy_gradient.py)
+2. [Implement the Training](/reinforcement_learning/policy_gradients/train.py)
+3. [Animate Iteration](/reinforcement_learning/policy_gradients/train.py)
