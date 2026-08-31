@@ -1,64 +1,40 @@
 #!/usr/bin/env python3
-"""
-Defines function to perform the TD(λ) algorithm
-"""
-
-
+"""TD(lambda) state-value estimation with eligibility traces."""
 import numpy as np
 
 
-def td_lambtha(env, V, policy, lambtha, episodes=5000, max_steps=100,
-               alpha=0.1, gamma=0.99):
+def td_lambtha(env, V, policy, lambtha, episodes=5000,
+               max_steps=100, alpha=0.1, gamma=0.99):
+    """Estimate the value function with the TD(lambda) algorithm.
+
+    Args:
+        env: the environment instance.
+        V: numpy.ndarray of shape ``(s,)`` with the value estimate.
+        policy: function that takes a state and returns an action.
+        lambtha: the eligibility trace decay factor.
+        episodes: number of episodes to train over.
+        max_steps: maximum number of steps per episode.
+        alpha: the learning rate.
+        gamma: the discount rate.
+
+    Returns:
+        V: the updated value estimate.
     """
-    Performs the TD(λ) algorithm
+    for _ in range(episodes):
+        state, _ = env.reset()
+        eligibility = np.zeros(V.shape[0])
 
-    parameters:
-        env: the openAI environment instance
-        V [numpy.ndarray of shape(s,)]: contains the value estimate
-        policy: function that takes in state & returns the next action to take
-        episodes [int]: total number of episodes to train over
-        max_steps [int]: the maximum number of steps per episode
-        alpha [float]: the learning rate
-        gamma [float]: the discount rate
-
-    returns:
-        V: the updated value estimate
-    """
-    # episode = [[states], [rewards]]
-    episode = [[], []]
-    # set up eligibility traces as a list initialized to 0
-    Et = [0 for i in range(env.observation_space.n)]
-    for ep in range(episodes):
-        # the initial state comes from resetting the environment
-        state = env.reset()
-        # iterate until done or max number of steps per episode reached
-        for step in range(max_steps):
-            # list of eligibility traces calculated with lambda & gamma
-            Et = list(np.array(Et) * lambtha * gamma)
-            # update list by increasing Et at current state
-            Et[state] += 1
-
-            # get action from the current state using policy
+        for _ in range(max_steps):
             action = policy(state)
-            # perform the action to get next_state, reward, done, and info
-            next_state, reward, done, info = env.step(action)
+            next_state, reward, terminated, truncated, _ = env.step(action)
 
-            # if the algorithm finds a hole, the reward is updated to -1
-            if env.desc.reshape(env.observation_space.n)[next_state] == b'H':
-                reward = -1
-            # if the algorithm finds the goal, the reward is updated to 1
-            if env.desc.reshape(env.observation_space.n)[next_state] == b'G':
-                reward = 1
+            delta = reward + gamma * V[next_state] - V[state]
+            eligibility[state] += 1
+            V += alpha * delta * eligibility
+            eligibility *= gamma * lambtha
 
-            # delta = reward + (gamma * V[next_state]) - V[state]
-            delta_t = reward + gamma * V[next_state] - V[state]
-            # V[state] = V[state] + (alpha * delta * eligibility trace[state])
-            V[state] = V[state] + alpha * delta_t * Et[state]
-
-            # break if done to trigger return
-            if done:
-                break
-            # otherwise, update state to next_state and continue
             state = next_state
-    # return V as numpy array when finished
-    return np.array(V)
+            if terminated or truncated:
+                break
+
+    return V

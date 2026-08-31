@@ -1,58 +1,39 @@
 #!/usr/bin/env python3
-"""
-Defines function to compute Monte Carlo policy gradient based on
-state and weight matrices
-"""
-
-
+"""Monte-Carlo policy gradient for a softmax linear policy."""
 import numpy as np
 
 
 def policy(matrix, weight):
-    """
-    Computes policy with a weight of a matrix
+    """Compute the softmax policy over actions.
 
-    parameters:
-        matrix [numpy.ndarray]: the matrix to compute policy from
-        weight [numpy.ndarray]: the weights applied to the matrix
+    Args:
+        matrix: state/input matrix of shape ``(m, n)``.
+        weight: policy weight matrix of shape ``(n, a)``.
 
-    returns:
-        the policy
+    Returns:
+        numpy.ndarray of shape ``(m, a)`` with the action probabilities.
     """
-    # for each column of weights, sum (matrix[i] * weight[i]) using dot product
-    dot_product = matrix.dot(weight)
-    # find the exponent of the calculated dot product
-    exp = np.exp(dot_product)
-    # policy is exp / sum(exp)
-    policy = exp / np.sum(exp)
-    return policy
+    scores = matrix @ weight
+    scores -= np.max(scores, axis=1, keepdims=True)
+    exp_scores = np.exp(scores)
+    return exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
 
 
 def policy_gradient(state, weight):
-    """
-    Computes the Monte Carlo policy gradient based on the policy
-        calculated from the above policy() function
+    """Sample an action and compute the gradient of ``log pi(a|s)``.
 
-    parameters:
-        state [numpy.ndarray]:
-            matrix representing the current observation of the environment
-        weight [numpy.ndarray]:
-            matrix of random weight
+    Args:
+        state: current observation (1-D array of length ``n``).
+        weight: policy weight matrix of shape ``(n, a)``.
 
-    returns:
-        the action and the gradient
+    Returns:
+        action: the sampled action index.
+        gradient: numpy.ndarray of shape ``(n, a)``.
     """
-    # first calculate policy using the policy function above
-    Policy = policy(state, weight)
-    # get action from policy
-    action = np.random.choice(len(Policy[0]), p=Policy[0])
-    # reshape single feature from policy
-    s = Policy.reshape(-1, 1)
-    # apply softmax function to s and access value at action
-    softmax = (np.diagflat(s) - np.dot(s, s.T))[action, :]
-    # calculate the dlog as softmax / policy at action
-    dlog = softmax / Policy[0, action]
-    # find gradient from input state matrix using dlog
-    gradient = state.T.dot(dlog[None, :])
-    # return action and the policy gradient
+    state = state.reshape(1, -1)
+    probs = policy(state, weight)
+    action = np.random.choice(probs.shape[1], p=probs[0])
+    one_hot = np.zeros_like(probs)
+    one_hot[0, action] = 1
+    gradient = state.T @ (one_hot - probs)
     return action, gradient
